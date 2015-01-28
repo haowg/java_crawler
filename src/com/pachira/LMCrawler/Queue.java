@@ -8,7 +8,6 @@ import java.util.LinkedList;
 public class Queue {
 	// 使用链表实现队列
 	private LinkedList<String> queue = new LinkedList<String>();
-
 	// 入队列
 	public void enQueue(String t) {
 		queue.addLast(t);

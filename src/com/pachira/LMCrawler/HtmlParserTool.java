@@ -21,18 +21,16 @@ public class HtmlParserTool {
 							"Mozilla/5.0 (Windows NT 6.1; WO"
 									+ "W64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31")
 					.get();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			String msg = e.getMessage();
 			if(msg.toLowerCase().contains("time")){
 				System.err.println("[error]: connect to "+ url + " time out.");
 //			}else if(rule){
 				doc = getDocument(url);
 			}else{
-				System.err.println("[error]: " + e.getMessage());
+				System.err.println("[error]: " + e.getMessage()+url);
 			}
 			e.printStackTrace();
-		}catch (Exception e) {
-			System.err.println("[error]: " + e.getMessage());
 		}
 		if (doc == null) {
 			System.err.println("¡¨Ω” ß∞‹");
@@ -75,9 +73,11 @@ public class HtmlParserTool {
 		if (doc == null) {
 			return set;
 		}
+//		Elements eles = doc.select("a[href~=.*[^(ppt)(jpg)(doc)(jsp)]$]");
 		Elements eles = doc.select("a");
 		for (Element element : eles) {
 			String url = element.absUrl("href");
+			url = url.split("#")[0];
 			if(filter.accept(url)){
 				set.add(url);
 			}
@@ -86,3 +86,4 @@ public class HtmlParserTool {
 	}
 
 }
+

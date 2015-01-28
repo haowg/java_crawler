@@ -27,10 +27,14 @@ public class MyCrawler {
 											// 开头的链接
 		LinkFilter filter = new LinkFilter() {
 			public boolean accept(String url) {
-				if (url.startsWith("http://www.lietu.com"))
-					return true;
+				if (url.contains("jd.com")){
+					return true;}
 				else
 					return false;
+//				if(url.startsWith("http://www.lietu.com"))
+//					return true;
+//				else
+//					return false;
 			}
 		};
 		// 初始化 URL 队列
@@ -43,8 +47,7 @@ public class MyCrawler {
 			if (visitUrl == null)
 				continue;
 			Document doc = HtmlParserTool.getDocument(visitUrl);
-//System.out.println(doc);
-System.out.println(visitUrl);
+			CheckMethods.PrintInfoMessage(visitUrl);
 			// 该 URL 放入已访问的 URL 中
 			LinkQueue.addVisitedUrl(visitUrl);
 			// 提取出下载网页中的 URL
@@ -59,6 +62,7 @@ System.out.println(visitUrl);
 	// main 方法入口
 	public static void main(String[] args) {
 		MyCrawler crawler = new MyCrawler();
-		crawler.crawling(new String[] { "http://www.lietu.com" });
+		//crawler.crawling(new String[] { "http://www.lietu.com" });
+		crawler.crawling(new String[] { "http://www.jd.com/allSort.aspx" });
 	}
 }
