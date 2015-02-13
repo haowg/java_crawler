@@ -61,8 +61,34 @@ public class MyCrawler {
 
 	// main 方法入口
 	public static void main(String[] args) {
-		MyCrawler crawler = new MyCrawler();
-		//crawler.crawling(new String[] { "http://www.lietu.com" });
-		crawler.crawling(new String[] { "http://www.jd.com/allSort.aspx" });
+
+		try {
+			BDBFrontier bBDBFrontier = new BDBFrontier("D:\\bdb");
+			CrawlUrl url = new CrawlUrl();
+			url.setOriUrl("http://www.163.com");
+			bBDBFrontier.putUrl(url);
+			for (int i = 0; i < 10000; i++) {
+				url.setOriUrl("http://www.163.comsdfsd");
+				System.out.println("sakjfkljs");
+				bBDBFrontier.putUrl(url);
+			}
+			url.setOriUrl("http://www.163.comsdfsd");
+			bBDBFrontier.putUrl(url);
+			Berkeley_DB bd = new Berkeley_DB();
+			bd.closeDatabase();
+			bd.openDatabase("D:\\bdb");
+			System.out.println(bd.getEveryItem());
+System.out.println(((CrawlUrl) bBDBFrontier.getNext()).getOriUrl());
+System.out.println(((CrawlUrl) bBDBFrontier.getNext()).getOriUrl());
+
+			bBDBFrontier.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+		}
+	
+//		MyCrawler crawler = new MyCrawler();
+//		//crawler.crawling(new String[] { "http://www.lietu.com" });
+//		crawler.crawling(new String[] { "http://www.jd.com/allSort.aspx" });
 	}
 }

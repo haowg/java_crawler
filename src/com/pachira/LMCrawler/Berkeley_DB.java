@@ -29,14 +29,15 @@ public class Berkeley_DB {
     //数据库对象
     private  Database myDatabase = null;
     //数据库文件名
-    private  String fileName = "";
+    private  String fileName = "mydb";
     //数据库名称
-    private  String dbName = "";
+    private  String dbName = "d:\\bdb";
+    
     
     /*
      * 打开当前数据库
      */
-    public  void openDatabase() {
+    public  void openDatabase(String dbName) {
         // TODO Auto-generated method stub
         try{
             CheckMethods.PrintDebugMessage("打开数据库: "+dbName);
