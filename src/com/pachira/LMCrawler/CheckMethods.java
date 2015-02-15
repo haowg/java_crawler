@@ -4,7 +4,9 @@ public class CheckMethods {
 
 	public static void PrintDebugMessage(String string) {
 		// TODO Auto-generated method stub
-		FileTools.write(string, "log");
+		System.err.println(string);
+		FileTools.write("########################"+Utils.gettime()+"###########################\n","log");
+		FileTools.write(string+"\n", "log");
 	}
 
 	public static void PrintInfoMessage(String message) {

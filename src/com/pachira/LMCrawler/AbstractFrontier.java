@@ -19,12 +19,21 @@ public abstract class AbstractFrontier {
 	protected Database catalogdatabase;
 	protected Database database;
 
-	public AbstractFrontier(String homeDirectory) throws DatabaseException,
-			FileNotFoundException {
+	public AbstractFrontier(String homeDirectory) throws DatabaseException{
 		// 打开 env
 		System.out.println("Opening environment in: " + homeDirectory);
+		File file = new File(homeDirectory);
+        if(!file.exists()){
+            try {
+            	file.mkdirs();
+			} catch (Exception e) {
+				CheckMethods.PrintDebugMessage("数据库环境路径非法，请检查！");
+			}
+        }
 		EnvironmentConfig envConfig = new EnvironmentConfig();
 		envConfig.setTransactional(true);
+		envConfig.setTxnNoSyncVoid(true);
+//		envConfig.setTxnWriteNoSyncVoid(false);
 		envConfig.setAllowCreate(true);
 		env = new Environment(new File(homeDirectory), envConfig);
 		// 设置 DatabaseConfig

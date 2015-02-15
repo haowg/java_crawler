@@ -321,7 +321,7 @@ public class Utils {
 		long longtime = d.getTime();
 //		System.out.println(longtime);
 		// 自用SimpleDateFormat函数变自想要格式,注意需要import java.text.SimpleDateFormat;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_hhmmssSS_");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
 		String timeString = sdf.format(longtime);
 		return timeString;
 

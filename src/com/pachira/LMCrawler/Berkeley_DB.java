@@ -24,12 +24,13 @@ public class Berkeley_DB {
     private  Environment myDbEnvironment = null;
     //数据库配置
     private  DatabaseConfig dbConfig=null;
-//    //数据库游标
-//    private  Cursor myCursor = null;
+    //数据库游标
+    @SuppressWarnings("unused")
+	private  Cursor myCursor = null;
     //数据库对象
     private  Database myDatabase = null;
     //数据库文件名
-    private  String fileName = "mydb";
+    private  String fileName = "d:\\bdb";
     //数据库名称
     private  String dbName = "d:\\bdb";
     
@@ -37,8 +38,10 @@ public class Berkeley_DB {
     /*
      * 打开当前数据库
      */
-    public  void openDatabase(String dbName) {
-        // TODO Auto-generated method stub
+    public  void openDatabase(String dbName,String fileName) {
+    	this.dbName = dbName;
+    	this.fileName = fileName;
+    	System.out.println(dbName);
         try{
             CheckMethods.PrintDebugMessage("打开数据库: "+dbName);
             EnvironmentConfig envConfig = new EnvironmentConfig();
@@ -47,6 +50,8 @@ public class Berkeley_DB {
             envConfig.setReadOnly(false);
             envConfig.setTxnTimeout(10000, TimeUnit.MILLISECONDS);
             envConfig.setLockTimeout(10000, TimeUnit.MILLISECONDS);
+            envConfig.setTxnNoSyncVoid(true);//设定事务提交时是否写更改的数据到磁盘，true不写磁盘。
+            envConfig.setTxnWriteNoSyncVoid(false);//设定事务在提交时，是否写缓冲的log到磁盘。如果写磁盘会影响性能，不写会影响事务的安全。随机应变。
             /*
              *   其他配置 可以进行更改
                 EnvironmentMutableConfig envMutableConfig = new EnvironmentMutableConfig();
@@ -57,9 +62,17 @@ public class Berkeley_DB {
              *
              */
             File file = new File(fileName);
-            if(!file.exists())
-                file.mkdirs();
+            if(!file.exists()){
+                try {
+                	file.mkdirs();
+				} catch (Exception e) {
+					CheckMethods.PrintDebugMessage("数据库路径非法，请检查！");
+				}
+            }
             myDbEnvironment = new Environment(file,envConfig);
+System.err.println("list:"+ myDbEnvironment.getDatabaseNames());
+System.err.println(myDbEnvironment.getHome());
+
             
             dbConfig = new DatabaseConfig();
             dbConfig.setTransactional(false);
@@ -127,7 +140,6 @@ public class Berkeley_DB {
      * 传入key和value
      */
     public  boolean writeToDatabase(String key,String value,boolean isOverwrite) {
-        // TODO Auto-generated method stub
         try {
               //设置key/value,注意DatabaseEntry内使用的是bytes数组
               DatabaseEntry theKey=new DatabaseEntry(key.trim().getBytes("UTF-8"));
@@ -187,7 +199,6 @@ public class Berkeley_DB {
      * 关闭当前数据库
      */
     public  void closeDatabase() {
-        // TODO Auto-generated method stub    
         if(myDatabase != null)
         {
             myDatabase.close();
@@ -247,7 +258,6 @@ public class Berkeley_DB {
             }
             catch (UnsupportedEncodingException e) 
             {
-                // TODO Auto-generated catch block
                 
                 e.printStackTrace();
                 return false;
@@ -280,7 +290,6 @@ public class Berkeley_DB {
      * 传入key 返回value
      */
     public String readFromDatabase(String key) {
-        // TODO Auto-generated method stub
         //Database.getSearchBoth()
         try {
              DatabaseEntry theKey = new DatabaseEntry(key.trim().getBytes("UTF-8"));
@@ -318,7 +327,6 @@ public class Berkeley_DB {
              }
             
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             
             return "";
@@ -328,7 +336,6 @@ public class Berkeley_DB {
      * 遍历数据库中的所有记录，返回list
      */
     public  ArrayList<String> getEveryItem() {
-        // TODO Auto-generated method stub
         CheckMethods.PrintDebugMessage("===========遍历数据库"+dbName+"中的所有数据==========");
          Cursor myCursor = null;
          ArrayList<String> resultList = new ArrayList<String>();
@@ -363,7 +370,6 @@ public class Berkeley_DB {
              return resultList;
          } 
          catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();    
             return null;
          }

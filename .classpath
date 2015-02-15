@@ -5,6 +5,8 @@
 	<classpathentry kind="lib" path="libs/je-6.2.31.jar"/>
 	<classpathentry kind="lib" path="libs/JEJConsole.jar"/>
 	<classpathentry kind="lib" path="libs/RepJEJConsole.jar"/>
+	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

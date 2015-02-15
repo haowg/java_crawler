@@ -3,34 +3,34 @@ package com.pachira.LMCrawler;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
-public class LinkQueue {
+public class memoryLinkQueue {
 	// 已访问的 url 集合
-	private static HashSet<String> visitedUrl = new HashSet<String>();
+	private HashSet<String> visitedUrl = new HashSet<String>();
 	// 待访问的 url 集合
-	private static PriorityQueue<String> unVisitedUrl = new PriorityQueue<String>();
+	private PriorityQueue<String> unVisitedUrl = new PriorityQueue<String>();
 
 	// 获得 URL 队列
-	public static PriorityQueue<String> getUnVisitedUrl() {
+	public PriorityQueue<String> getUnVisitedUrl() {
 		return unVisitedUrl;
 	}
 
 	// 添加到访问过的 URL 队列中
-	public static void addVisitedUrl(String visitUrl) {
+	public void addVisitedUrl(String visitUrl) {
 		visitedUrl.add(MD5.getMD5string(visitUrl.getBytes()));
 	}
 
 	// 移除访问过的 URL
-	public static void removeVisitedUrl(String url) {
+	public void removeVisitedUrl(String url) {
 		visitedUrl.remove(url);
 	}
 
 	// 未访问的 URL 出队列
-	public static Object unVisitedUrlDeQueue() {
+	public Object unVisitedUrlDeQueue() {
 		return unVisitedUrl.poll();
 	}
 
 	// 保证每个 URL 只被访问一次
-	public static void addUnvisitedUrl(String url) {
+	public void addUnvisitedUrl(String url) {
 //		CheckMethods.PrintInfoMessage(visitedUrl.toString());
 //		CheckMethods.PrintInfoMessage(MD5.getMD5byte(url.getBytes()).toString());
 //		CheckMethods.PrintInfoMessage(String.valueOf(visitedUrl.contains(MD5.getMD5byte(url.getBytes()))));
@@ -41,12 +41,12 @@ public class LinkQueue {
 	}
 
 	// 获得已经访问的 URL 数目
-	public static int getVisitedUrlNum() {
+	public int getVisitedUrlNum() {
 		return visitedUrl.size();
 	}
 
 	// 判断未访问的 URL 队列中是否为空
-	public static boolean unVisitedUrlsEmpty() {
+	public boolean unVisitedUrlsEmpty() {
 		return unVisitedUrl.isEmpty();
 	}
 }
