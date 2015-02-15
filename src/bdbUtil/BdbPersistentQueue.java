@@ -260,21 +260,4 @@ public class BdbPersistentQueue<E extends Serializable> extends AbstractQueue<E>
 			}
 	    }
     }
-	public boolean unVisitedUrlsEmpty() {
-	
-		return false;
-	}
-	public int getVisitedUrlNum() {
-		
-		return 0;
-	}
-	public String unVisitedUrlDeQueue() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public void addVisitedUrl(String visitUrl) {
-		// TODO Auto-generated method stub
-//		
-	}
-    
 }

@@ -1,5 +1,6 @@
 package com.pachira.LMCrawler;
 
+import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -123,12 +124,15 @@ public class MyCrawler {
 			}
 		};
 		// 初始化 URL 队列
-		initDBCrawlerWithSeeds(seeds);
+		
 		java.util.Queue<String> unVisitedSet=new BdbPersistentQueue<String>("D:\\bdb","unVisited",String.class);
 		java.util.Queue<String> visitedSet=new BdbPersistentQueue<String>("D:\\bdb","visited",String.class);
+		initDBCrawlerWithSeeds(seeds,unVisitedSet);
+		
 		// 循环条件：待抓取的链接不空且抓取的网页不多于 1000
 		while (!unVisitedSet.isEmpty()
-				&& unVisitedSet.size() <= 1000) {
+//				&& unVisitedSet.size() <= 10000) {
+				&& visitedSet.size() <= 10) {
 			// 队头 URL 出队列
 			String visitUrl = (String) unVisitedSet
 					.poll();
@@ -144,14 +148,16 @@ public class MyCrawler {
 			Set<String> links = HtmlParserTool.extracLinks(doc, filter);
 			// 新的未访问的 URL 入队
 			for (String link : links) {
-				visitedSet.add(link);
+				unVisitedSet.add(link);
 			}
 		}
+//		visitedSet.
 
 	}
 
-	private void initDBCrawlerWithSeeds(String[] seeds) {
-		
+	private void initDBCrawlerWithSeeds(String[] seeds,Queue<String> queue) {
+		for (int i = 0; i < seeds.length; i++)
+			queue.add(seeds[i]);
 		
 	}
 }

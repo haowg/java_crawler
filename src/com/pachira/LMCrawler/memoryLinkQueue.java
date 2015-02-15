@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 
 public class memoryLinkQueue {
+	int i;
 	// 已访问的 url 集合
 	private HashSet<String> visitedUrl = new HashSet<String>();
 	// 待访问的 url 集合
@@ -31,6 +32,7 @@ public class memoryLinkQueue {
 
 	// 保证每个 URL 只被访问一次
 	public void addUnvisitedUrl(String url) {
+System.err.println(i++);
 //		CheckMethods.PrintInfoMessage(visitedUrl.toString());
 //		CheckMethods.PrintInfoMessage(MD5.getMD5byte(url.getBytes()).toString());
 //		CheckMethods.PrintInfoMessage(String.valueOf(visitedUrl.contains(MD5.getMD5byte(url.getBytes()))));
