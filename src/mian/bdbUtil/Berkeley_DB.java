@@ -32,7 +32,7 @@ public class Berkeley_DB {
     //数据库对象
     private  Database myDatabase = null;
     //数据库文件名
-    private  String fileName = "d:\\bdb";
+//    private  String fileName = "d:\\bdb";
     //数据库名称
     private  String dbName = "d:\\bdb";
     
@@ -42,7 +42,7 @@ public class Berkeley_DB {
      */
     public  void openDatabase(String dbName,String fileName) {
     	this.dbName = dbName;
-    	this.fileName = fileName;
+//    	this.fileName = fileName;
     	System.out.println(dbName);
         try{
             CheckMethods.PrintDebugMessage("打开数据库: "+dbName);

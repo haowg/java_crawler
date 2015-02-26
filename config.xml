@@ -1,0 +1,11 @@
+<config
+
+ FILTERREGEX = ".*jd\\.com.*"
+ HOMEDIRECTORY = "D:\\bsdb"
+ CRAWLERNAME = "jingdong"
+>
+
+	<seed>.*jd\\.com.*","D:\\bsdb","jingdong</>
+	<seed></>
+	
+</>

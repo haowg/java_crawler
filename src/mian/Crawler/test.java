@@ -23,8 +23,13 @@ public class test {
 		CheckMethods.PrintInfoMessage("time\t"+String.valueOf(time2 - time1));
 	}
 	void testCrawler(){
-		MyCrawler crawler = new MyCrawler(".*jd\\.com.*","D:\\bsdb","jingdong");
-		crawler.crawlingbyDBFrt(new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")});
+		
+		CrawlUrl[] jingdongSeeds = new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")};
+
+		MyCrawler crawler = new MyCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds);
+		
+		new Thread(crawler).start();
+//		new Thread(new MyCrawler(".*jd\\.com.*","D:\\bsdb","jd",jingdongSeeds)).start();
 	}
 	
 	void checkdbdb(String dbname){

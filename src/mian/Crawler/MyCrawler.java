@@ -12,14 +12,15 @@ import org.jsoup.nodes.Document;
 import filter.SimpleBloomFilter;
 import Froniter.BDBFrontier;
 
-public class MyCrawler {
+public class MyCrawler implements Runnable{
 
 	LinkFilter filter = null;
 	private String homeDirectory = null;
 	private String crawlerName = null;
+	CrawlUrl[] seeds = null;
 
 	public MyCrawler(final String filterRegex, String homeDirectory,
-			String crawlerName) {
+			String crawlerName,CrawlUrl[] seeds) {
 		// 定义过滤器
 		LinkFilter filter = new LinkFilter() {
 			public boolean accept(String url) {
@@ -36,6 +37,11 @@ public class MyCrawler {
 		this.filter = filter;
 		this.homeDirectory = homeDirectory;
 		this.crawlerName = crawlerName;
+		this.seeds = seeds;
+	}
+	
+	public void run() {
+		crawlingbyDBFrt(seeds);
 	}
 
 	/**
@@ -99,7 +105,6 @@ public class MyCrawler {
 	 * @param seeds
 	 *            种子 URL
 	 */
-
 	private void initDBFrtrawlerWithSeeds(CrawlUrl[] seeds,
 			BDBFrontier unVisitedSet) {
 		for (int i = 0; i < seeds.length; i++)
@@ -109,9 +114,8 @@ public class MyCrawler {
 	// 测试函数
 	public static void main(String[] args) {
 		MyCrawler crawler = new MyCrawler(".*jd\\.com.*", "D:\\bsdb",
-				"jingdong");
-		CrawlUrl curl = new CrawlUrl();
-		curl.setOriUrl("http://www.jd.com/allSort.aspx");
-		crawler.crawlingbyDBFrt(new CrawlUrl[] { curl });
+				"jingdong",new CrawlUrl[] { new CrawlUrl("http://www.jd.com/allSort.aspx") });
+		new Thread(crawler).start();
 	}
+
 }

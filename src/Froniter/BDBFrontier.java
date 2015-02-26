@@ -90,6 +90,7 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 		}else {
 			sbf.add((CrawlUrl) value);
 			pendingUrisDB.put(key, value);
+			sync();
 		}
 		
 	}
@@ -213,8 +214,17 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 	public long size() {
 		return database.count();
 	}
-	
-	
+	/*
+	 * 同步到磁盘上去
+	 */
+	public void sync(){
+		try {
+			env.sync();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
 	// 测试函数
 		public static void main(String[] args) {
 			try {
