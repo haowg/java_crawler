@@ -14,14 +14,6 @@ public class SimpleBloomFilter {
 	private int filterNum = 0;
 
 
-	public static void main(String[] args) {
-		String value = "stone2083@yahoo.cn";
-		SimpleBloomFilter filter = new SimpleBloomFilter();
-		System.out.println(filter.contains(value));
-		filter.add(value);
-		System.out.println(filter.contains(value));
-		filter.add("sssss");	
-	}
 
 	public SimpleBloomFilter() {
 		for (int i = 0; i < seeds.length; i++) {
@@ -41,20 +33,16 @@ public class SimpleBloomFilter {
 	// 覆盖方法，把 URL 添加进来
 	public void add(String value) {
 		if (!contains(value)) {
-CheckMethods.PrintInfoMessage(filterNum+++"\t fileterNum"+"\t"+value);
+CheckMethods.PrintDebugMessage(filterNum+++"\t fileterNum"+"\t"+value);
 			for (SimpleHash f : func) {
 				bits.set(f.hash(value), true);
 			}
-		}else {
-CheckMethods.PrintInfoMessage("we have added "+value+contains(value));
 		}
 	}
 
 	// 覆盖方法，是否包含 URL
 	public boolean contains(CrawlUrl value) {
-//CheckMethods.PrintInfoMessage("in contains: "+contains(value.getOriUrl()));
 		if (contains(value.getOriUrl())) {
-			System.err.println(value);
 			return true;
 		}
 		return false;
@@ -63,12 +51,7 @@ CheckMethods.PrintInfoMessage("we have added "+value+contains(value));
 
 	// 覆盖方法，是否包含 URL
 	public boolean contains(String value) {
-//CheckMethods.PrintInfoMessage("in contains2: "+value);
 		value = value.trim();
-//		System.out.println(value);
-//if (value.equals("http://www.jd.com/allSort.aspx")) {
-//	CheckMethods.PrintInfoMessage(value);
-//}
 		if (value == null) {
 			return false;
 		}
@@ -98,4 +81,16 @@ CheckMethods.PrintInfoMessage("we have added "+value+contains(value));
 			return (cap - 1) & result;
 		}
 	}
+	
+	/*
+	 * 测试函数
+	 */
+		public static void main(String[] args) {
+			String value = "stone2083@yahoo.cn";
+			SimpleBloomFilter filter = new SimpleBloomFilter();
+			System.out.println(filter.contains(value));
+			filter.add(value);
+			System.out.println(filter.contains(value));
+			filter.add("sssss");	
+		}
 }

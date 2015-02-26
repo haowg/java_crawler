@@ -1,13 +1,11 @@
 package Froniter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.concurrent.TimeUnit;
 
 import mian.tools.CheckMethods;
 
 import com.sleepycat.bind.serial.StoredClassCatalog;
-import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseException;
@@ -31,7 +29,7 @@ public abstract class AbstractFrontier {
 		File file = new File(homeDirectory);
 CheckMethods.PrintInfoMessage("Opening environment in: " + homeDirectory);
         if(!file.exists()){
-CheckMethods.PrintInfoMessage("file not exists");
+CheckMethods.PrintDebugMessage("file not exists");
             try {
             	file.mkdirs();
 			} catch (Exception e) {

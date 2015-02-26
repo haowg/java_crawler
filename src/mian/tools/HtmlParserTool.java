@@ -79,6 +79,10 @@ public class HtmlParserTool {
 		for (Element element : eles) {
 			String url = element.absUrl("href");
 			url = url.split("#")[0];
+			if (url.endsWith("/")) {
+//				System.out.println(url+"------------------------------");
+				url = url.substring(0, url.length()-1);
+			}
 			if(filter.accept(url)){
 				set.add(url);
 			}

@@ -4,6 +4,13 @@ import java.io.Serializable;
 
 public class CrawlUrl implements Serializable{
 
+	public CrawlUrl(String oriUrl){
+			this.oriUrl = oriUrl;
+		}
+	
+	public CrawlUrl() {
+	}
+
 	/**
 	 * 
 	 */

@@ -1,8 +1,12 @@
 package Froniter;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
 
 import mian.Crawler.CrawlUrl;
 import mian.Crawler.MD5;
@@ -19,6 +23,7 @@ import com.sleepycat.je.DatabaseNotFoundException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
+
 import filter.SimpleBloomFilter;
 
 public class BDBFrontier extends AbstractFrontier implements Frontier {
@@ -37,15 +42,15 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 
 		super(homeDirectory,dbName);
 		this.dbName = dbName;
-		this.homeDirectory = homeDirectory;
 		this.sbf = sbf;
 		this.homeDirectory = homeDirectory;
-		if (isunvisited) {
+		if (!isunvisited) {
 			if (!getEveryItem()) {
-				CheckMethods.PrintDebugMessage("read exit data fault!");
+				CheckMethods.PrintDebugMessage("read exist data fault!");
 				System.exit(-1);
 			}
 		}
+		
 CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 		this.isunvisited = isunvisited;
 		EntryBinding keyBinding = new SerialBinding(javaCatalog, String.class);
@@ -59,7 +64,6 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 		CrawlUrl result = null;
 		if (!pendingUrisDB.isEmpty()) {
 			Set entrys = pendingUrisDB.entrySet();
-			// CheckMethods.PrintInfoMessage(entrys);
 			Entry<String, CrawlUrl> entry = (Entry<String, CrawlUrl>) pendingUrisDB.entrySet().iterator().next();
 			result = entry.getValue();
 			delete(entry.getKey());
@@ -70,9 +74,6 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 	// 存入 URL
 
 	public boolean putUrl(CrawlUrl url) {
-//if (isunvisited) {
-//	CheckMethods.PrintInfoMessage("put:\t"+url.getOriUrl());
-//}
 		put(url.getOriUrl(), url);
 		return true;
 	}
@@ -81,9 +82,7 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 	@SuppressWarnings("unchecked")
 	protected void put(Object key, Object value) {
 		if (isunvisited) {
-//CheckMethods.PrintInfoMessage("is unvisited "+visited((CrawlUrl) value)+" "+((CrawlUrl) value).getOriUrl());
 			if (visited((CrawlUrl) value)) {
-//CheckMethods.PrintInfoMessage("have visited the url:\t"+((CrawlUrl) value).getOriUrl());
 			return ;
 			}else {
 				pendingUrisDB.put(key, value);
@@ -105,7 +104,9 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 		return pendingUrisDB.remove(key);
 	}
 
-	// 删除
+	/*
+	 *  删除 删除整个环境中的所有数据库，慎用！
+	 */
 	public void clear() {
 	       try {
 	    	   close();
@@ -119,21 +120,22 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 		    } catch (DatabaseException e) {
 		        // TODO Auto-generated catch block
 		        e.printStackTrace();
-//		    } finally{
-//		    	try {
-//		    		if(this.homeDirectory!=null){
-//		    			FileUtils.deleteDirectory(new File(this.homeDirectory));
-//		    		}
-//					
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+		    } finally{
+		    	try {
+		    		if(this.homeDirectory!=null){
+		    			FileUtils.deleteDirectory(new File(this.homeDirectory));
+		    		}
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    }
 	    
 	}
 
 	// 根据 URL 计算键值，可以使用各种压缩算法，包括 MD5 等压缩算法
+	@SuppressWarnings("unused")
 	private String caculateUrl(String url) {
 		try {
 			return MD5.getMD5string(url.getBytes("UTF-8"));
@@ -144,8 +146,7 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 
 	public boolean getEveryItem() {
 		CheckMethods.PrintInfoMessage("2dbName:\t" + dbName);
-		CheckMethods.PrintDebugMessage("===========遍历数据库" + dbName
-				+ "中的所有数据==========");
+		CheckMethods.PrintDebugMessage("===========遍历数据库" + dbName+ "中的所有数据==========");
 		Cursor myCursor = null;
 		// ArrayList<String> resultList = new ArrayList<String>();
 		Transaction txn = null;
@@ -164,24 +165,17 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 				// String theData = new String(foundData.getData(), "UTF-8");
 				// resultList.add(theKey);
 				sbf.add(theKey);
-				// CheckMethods.PrintDebugMessage(theKey);
-				// CheckMethods.PrintDebugMessage("Key | Data : " + theKey +
-				// " | " + theData + "");
+				
 				while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 					theKey = new String(foundKey.getData(), "UTF-8");
 					theKey = theKey.substring(3);
 					// theData = new String(foundData.getData(), "UTF-8");
 					sbf.add(theKey);
-					// resultList.add(theKey);
-					// CheckMethods.PrintDebugMessage("Key | Data : " + theKey +
-					// " | " + theData + "");
-					// CheckMethods.PrintDebugMessage(theKey);
 				}
 			}
 			myCursor.close();
 			txn.commit();
-			CheckMethods.PrintDebugMessage("===========数据库" + dbName
-					+ "共有有数据==========:\t" + size());
+			CheckMethods.PrintDebugMessage("===========数据库" + dbName+ "共有有数据==========:\t" + size());
 
 			return true;
 		} catch (UnsupportedEncodingException e) {
@@ -200,33 +194,9 @@ CheckMethods.PrintInfoMessage("dbName:\t"+dbName);
 		}
 
 	}
-	
-	// 测试函数
-	public static void main(String[] args) {
-		try {
-			BDBFrontier bBDBFrontier = new BDBFrontier("D:\\bdb","url",false,new SimpleBloomFilter());
-			CrawlUrl url = new CrawlUrl();
-			url.setOriUrl("http://www.163.com");
-//			bBDBFrontier.put("test", "value");
-			bBDBFrontier.putUrl(url);
-			/*
-			 * getNext 包括删除方法
-			 */
-CheckMethods.PrintInfoMessage(((CrawlUrl) bBDBFrontier.pool()).getOriUrl());
-			bBDBFrontier.putUrl(url);
-
-CheckMethods.PrintInfoMessage(bBDBFrontier.get("http://www.163.com").getOriUrl());
-
-			bBDBFrontier.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-		}
-	}
 
 	@Override
 	public boolean visited(CrawlUrl url) {
-//		System.out.println("did we visited this url ? "+sbf.contains(url)+" "+url.getOriUrl());
 		if (sbf.contains(url)) {
 			return true;
 		}
@@ -241,7 +211,31 @@ CheckMethods.PrintInfoMessage(bBDBFrontier.get("http://www.163.com").getOriUrl()
 	}
 
 	public long size() {
-//CheckMethods.PrintInfoMessage(database.getDatabaseName());
 		return database.count();
 	}
+	
+	
+	// 测试函数
+		public static void main(String[] args) {
+			try {
+				BDBFrontier bBDBFrontier = new BDBFrontier("D:\\bdb","url",false,new SimpleBloomFilter());
+				CrawlUrl url = new CrawlUrl();
+				url.setOriUrl("http://www.163.com");
+//				bBDBFrontier.put("test", "value");
+				bBDBFrontier.putUrl(url);
+				/*
+				 * getNext 包括删除方法
+				 */
+	CheckMethods.PrintInfoMessage(((CrawlUrl) bBDBFrontier.pool()).getOriUrl());
+				bBDBFrontier.putUrl(url);
+
+	CheckMethods.PrintInfoMessage(bBDBFrontier.get("http://www.163.com").getOriUrl());
+
+				bBDBFrontier.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+			}
+		}
+	
 }

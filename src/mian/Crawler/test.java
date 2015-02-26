@@ -12,22 +12,27 @@ public class test {
 		long time1 = System.currentTimeMillis();
 		test t = new test();
 		
-		
+		t.testCrawler();
 //		t.checkdbdb("testURLs");
 //		t.testBDB3();
-		t.testBDB();
+//		t.testBDB();
 //		t.testotherBDB();
 		
 		
 		long time2 = System.currentTimeMillis();
 		CheckMethods.PrintInfoMessage("time\t"+String.valueOf(time2 - time1));
 	}
+	void testCrawler(){
+		MyCrawler crawler = new MyCrawler(".*jd\\.com.*","D:\\bsdb","jingdong");
+		crawler.crawlingbyDBFrt(new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")});
+	}
+	
 	void checkdbdb(String dbname){
 		Berkeley_DB bdb = new Berkeley_DB();
 		bdb.openDatabase(dbname,"D:\\bsdb");
-		for (String string : bdb.getEveryItem()) {
+//		for (String string : bdb.getEveryItem()) {
 //			CheckMethods.PrintInfoMessage(string);
-		}
+//		}
 		bdb.closeDatabase();
 	}
 	void testBDB3(){
