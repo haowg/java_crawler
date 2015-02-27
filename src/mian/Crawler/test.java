@@ -1,5 +1,7 @@
 package mian.Crawler;
 
+import java.util.HashSet;
+
 import filter.SimpleBloomFilter;
 import Froniter.BDBFrontier;
 import mian.Crawler.CrawlUrl;
@@ -12,8 +14,8 @@ public class test {
 		long time1 = System.currentTimeMillis();
 		test t = new test();
 		
-		t.testCrawler();
-//		t.checkdbdb("testURLs");
+//		t.testCrawler();
+		t.checkdbdb("testURLs");
 //		t.testBDB3();
 //		t.testBDB();
 //		t.testotherBDB();
@@ -24,9 +26,11 @@ public class test {
 	}
 	void testCrawler(){
 		
-		CrawlUrl[] jingdongSeeds = new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")};
-
-		MyCrawler crawler = new MyCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds);
+//		CrawlUrl[] jingdongSeeds = new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")};
+		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
+		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
+		
+		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds);
 		
 		new Thread(crawler).start();
 //		new Thread(new MyCrawler(".*jd\\.com.*","D:\\bsdb","jd",jingdongSeeds)).start();

@@ -11,7 +11,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class HtmlParserTool {
-	
+	/*
+	 * 访问url并获得网页内容
+	 */
 	public static  Document getDocument(String url) {
 		Document doc = null;
 		try {
@@ -38,11 +40,17 @@ public class HtmlParserTool {
 		}
 		return doc;
 	}
+	/*
+	 * 去除汉字和英文字符数字之外的字符
+	 */
 	public static  String totitle(String titleString) {
 		String regEX = "[^\u4e00-\u9fa5\\w\\.]+";
 		titleString = titleString.replaceAll(regEX, "");
 		return titleString;
 	}
+	/*
+	 * 把Unicode转换成一般的字符串
+	 */
 	public static String convertunicode(String utfString){
 		StringBuilder sb = new StringBuilder();
 		int i = -1;
@@ -58,6 +66,9 @@ public class HtmlParserTool {
 		
 		return sb.toString();
 	}
+	/*
+	 * Jsoup 的 select 的封装
+	 */
 	public Elements slect(Element e,String rule) {
 		Elements eles = new Elements();
 		try {
@@ -68,6 +79,9 @@ public class HtmlParserTool {
 		}
 		return eles;
 	}
+	/*
+	 * 获取网页中的链接
+	 */
 	public static Set<String> extracLinks(Document doc, LinkFilter filter) {
 		Set<String> set = new HashSet<String>();
 

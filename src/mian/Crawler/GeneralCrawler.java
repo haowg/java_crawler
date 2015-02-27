@@ -1,5 +1,6 @@
 package mian.Crawler;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,15 +13,15 @@ import org.jsoup.nodes.Document;
 import filter.SimpleBloomFilter;
 import Froniter.BDBFrontier;
 
-public class MyCrawler implements Runnable{
+public class GeneralCrawler implements Runnable{
 
 	LinkFilter filter = null;
 	private String homeDirectory = null;
 	private String crawlerName = null;
-	CrawlUrl[] seeds = null;
+	HashSet<CrawlUrl> seeds = null;
 
-	public MyCrawler(final String filterRegex, String homeDirectory,
-			String crawlerName,CrawlUrl[] seeds) {
+	public GeneralCrawler(final String filterRegex, String homeDirectory,
+			String crawlerName,HashSet<CrawlUrl> jingdongSeeds) {
 		// 定义过滤器
 		LinkFilter filter = new LinkFilter() {
 			public boolean accept(String url) {
@@ -37,7 +38,11 @@ public class MyCrawler implements Runnable{
 		this.filter = filter;
 		this.homeDirectory = homeDirectory;
 		this.crawlerName = crawlerName;
-		this.seeds = seeds;
+		this.seeds = jingdongSeeds;
+		System.err.println(filterRegex + "\t "+homeDirectory+"\t"+crawlerName);
+		for (CrawlUrl crawlUrl : jingdongSeeds) {
+			System.err.println(crawlUrl.getOriUrl());
+		}
 	}
 	
 	public void run() {
@@ -48,10 +53,10 @@ public class MyCrawler implements Runnable{
 	 * 抓取过程
 	 * 
 	 * @return
-	 * @param seeds
+	 * @param seeds2
 	 */
 
-	public void crawlingbyDBFrt(CrawlUrl[] seeds) {
+	public void crawlingbyDBFrt(HashSet<CrawlUrl> seeds2) {
 
 		// 初始化 URL 队列
 		SimpleBloomFilter sbf = new SimpleBloomFilter();
@@ -59,7 +64,7 @@ public class MyCrawler implements Runnable{
 				+ "unVisitedSet", true, sbf);
 		BDBFrontier visitedSet = new BDBFrontier("D:\\bsdb", crawlerName
 				+ "visitedSet", false, sbf);
-		initDBFrtrawlerWithSeeds(seeds, unVisitedSet);
+		initDBFrtrawlerWithSeeds(seeds2, unVisitedSet);
 
 		CheckMethods.PrintDebugMessage("unvisitedSet size:\t"
 				+ unVisitedSet.size());
@@ -102,19 +107,23 @@ public class MyCrawler implements Runnable{
 	 * 使用种子初始化 URL 队列
 	 * 
 	 * @return
-	 * @param seeds
+	 * @param seeds2
 	 *            种子 URL
 	 */
-	private void initDBFrtrawlerWithSeeds(CrawlUrl[] seeds,
+	private void initDBFrtrawlerWithSeeds(HashSet<CrawlUrl> seeds2,
 			BDBFrontier unVisitedSet) {
-		for (int i = 0; i < seeds.length; i++)
-			unVisitedSet.putUrl(seeds[i]);
+		for (CrawlUrl crawlUrl : seeds2) {
+			unVisitedSet.putUrl(crawlUrl);
+		}
 	}
 
 	// 测试函数
 	public static void main(String[] args) {
-		MyCrawler crawler = new MyCrawler(".*jd\\.com.*", "D:\\bsdb",
-				"jingdong",new CrawlUrl[] { new CrawlUrl("http://www.jd.com/allSort.aspx") });
+		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
+		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
+		
+		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds);
+		
 		new Thread(crawler).start();
 	}
 

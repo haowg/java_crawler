@@ -3,9 +3,7 @@
  FILTERREGEX = ".*jd\\.com.*"
  HOMEDIRECTORY = "D:\\bsdb"
  CRAWLERNAME = "jingdong"
->
-
-	<seed>.*jd\\.com.*","D:\\bsdb","jingdong</>
-	<seed></>
-	
-</>
+ 
+ SEED=http://www.jd.com/allSort.aspx
+ SEED=http://v.iqilu.com/ggpd/xcll
+/>
