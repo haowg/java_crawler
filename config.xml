@@ -4,6 +4,11 @@
  HOMEDIRECTORY = "D:\\bsdb"
  CRAWLERNAME = "jingdong"
  
- SEED=http://www.jd.com/allSort.aspx
- SEED=http://v.iqilu.com/ggpd/xcll
+ SELECTRULE = "{.*club.jd.com.*}div#comments-list  div > div.i-item > div.comment-content>dl dd"
+ SELECTRULE = "{.*club.jd.com/review/.*}div#comments-list  div > div.i-item > div.comment-content>dl dd"
+ 
+ SEED = "http://www.jd.com/allSort.aspx"
+ SEED = "http://v.iqilu.com/ggpd/xcll"
+ 
+ 
 />

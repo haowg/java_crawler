@@ -1,5 +1,6 @@
 package mian.Crawler;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import filter.SimpleBloomFilter;
@@ -15,7 +16,7 @@ public class test {
 		test t = new test();
 		
 //		t.testCrawler();
-		t.checkdbdb("testURLs");
+		t.checkdbdb("jingdongvisitedSet");
 //		t.testBDB3();
 //		t.testBDB();
 //		t.testotherBDB();
@@ -30,7 +31,7 @@ public class test {
 		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
 		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
 		
-		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds);
+		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds,new HashMap<String,String>());
 		
 		new Thread(crawler).start();
 //		new Thread(new MyCrawler(".*jd\\.com.*","D:\\bsdb","jd",jingdongSeeds)).start();

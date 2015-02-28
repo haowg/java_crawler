@@ -1,6 +1,11 @@
 package mian.Crawler;
 
+import htmlPaser.htmlFilter;
+import htmlPaser.parseByRule;
+
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,9 +24,10 @@ public class GeneralCrawler implements Runnable{
 	private String homeDirectory = null;
 	private String crawlerName = null;
 	HashSet<CrawlUrl> seeds = null;
+	HashMap<String,String> rules = null;
 
 	public GeneralCrawler(final String filterRegex, String homeDirectory,
-			String crawlerName,HashSet<CrawlUrl> jingdongSeeds) {
+			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, HashMap<String,String> rules) {
 		// 定义过滤器
 		LinkFilter filter = new LinkFilter() {
 			public boolean accept(String url) {
@@ -39,14 +45,18 @@ public class GeneralCrawler implements Runnable{
 		this.homeDirectory = homeDirectory;
 		this.crawlerName = crawlerName;
 		this.seeds = jingdongSeeds;
-		System.err.println(filterRegex + "\t "+homeDirectory+"\t"+crawlerName);
-		for (CrawlUrl crawlUrl : jingdongSeeds) {
-			System.err.println(crawlUrl.getOriUrl());
+		this.rules = rules;
+//		System.err.println(filterRegex + "\t "+homeDirectory+"\t"+crawlerName);
+//		for (CrawlUrl crawlUrl : jingdongSeeds) {
+//			System.err.println(crawlUrl.getOriUrl());
+//		}
+		for (String key : rules.keySet()) {
+			CheckMethods.PrintInfoMessage(key+":\t"+rules.get(key));
 		}
 	}
 	
 	public void run() {
-		crawlingbyDBFrt(seeds);
+		crawlingbyDBFrt(seeds,rules);
 	}
 
 	/**
@@ -54,11 +64,14 @@ public class GeneralCrawler implements Runnable{
 	 * 
 	 * @return
 	 * @param seeds2
+	 * @param rules2 
 	 */
 
-	public void crawlingbyDBFrt(HashSet<CrawlUrl> seeds2) {
+	public void crawlingbyDBFrt(HashSet<CrawlUrl> seeds2, HashMap<String, String> rules2) {
 
 		// 初始化 URL 队列
+		
+		
 		SimpleBloomFilter sbf = new SimpleBloomFilter();
 		BDBFrontier unVisitedSet = new BDBFrontier(homeDirectory, crawlerName
 				+ "unVisitedSet", true, sbf);
@@ -86,6 +99,7 @@ public class GeneralCrawler implements Runnable{
 			if (visitUrl == null)
 				continue;
 			Document doc = HtmlParserTool.getDocument(visitUrl.getOriUrl());
+			getLMData(doc,visitUrl.getOriUrl(),rules2);
 			CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl());
 			// 该 URL 放入已访问的 URL 中
 			visitedSet.putUrl(visitUrl);
@@ -101,6 +115,17 @@ public class GeneralCrawler implements Runnable{
 		}
 		visitedSet.close();
 		unVisitedSet.close();
+	}
+
+
+	private void getLMData(Document doc, String oriUrl, HashMap<String, String> myrules) {
+		for (String rexgex : myrules.keySet()) {
+			if (htmlFilter.accept(rexgex, oriUrl)) {
+				CheckMethods.PrintInfoMessage("accapt");
+				parseByRule.parse(myrules.get(rexgex), doc);
+			}
+		}
+		
 	}
 
 	/**
@@ -122,7 +147,7 @@ public class GeneralCrawler implements Runnable{
 		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
 		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
 		
-		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds);
+		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds,new HashMap<String, String>());
 		
 		new Thread(crawler).start();
 	}
