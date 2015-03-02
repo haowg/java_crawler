@@ -1,5 +1,6 @@
 package mian.Crawler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -30,8 +31,9 @@ public class test {
 //		CrawlUrl[] jingdongSeeds = new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")};
 		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
 		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
-		
-		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds,new HashMap<String,String>());
+		HashSet<LinkFilter> linkFilters = new HashSet<>();
+		linkFilters.add(new LinkFilter(".*jd\\.com.*"));
+		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds,new ArrayList<String>());
 		
 		new Thread(crawler).start();
 //		new Thread(new MyCrawler(".*jd\\.com.*","D:\\bsdb","jd",jingdongSeeds)).start();

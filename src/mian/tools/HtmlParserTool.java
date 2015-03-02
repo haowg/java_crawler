@@ -82,7 +82,7 @@ public class HtmlParserTool {
 	/*
 	 * 获取网页中的链接
 	 */
-	public static Set<String> extracLinks(Document doc, LinkFilter filter) {
+	public static Set<String> extracLinks(Document doc, HashSet<LinkFilter> linkFilters) {
 		Set<String> set = new HashSet<String>();
 
 		if (doc == null) {
@@ -91,15 +91,30 @@ public class HtmlParserTool {
 //		Elements eles = doc.select("a[href~=.*[^(ppt)(jpg)(doc)(jsp)]$]");
 		Elements eles = doc.select("a");
 		for (Element element : eles) {
+			boolean accept = false;
 			String url = element.absUrl("href");
 			url = url.split("#")[0];
 			if (url.endsWith("/")) {
 //				System.out.println(url+"------------------------------");
 				url = url.substring(0, url.length()-1);
 			}
-			if(filter.accept(url)){
+			for (LinkFilter linkFilter : linkFilters) {
+				if(linkFilter.accept(url)){
+//CheckMethods.PrintInfoMessage("accept\t"+linkFilter.filterRegex+url);
+					accept = true;
+					break;
+				}
+			}
+			if (accept) {
 				set.add(url);
 			}
+			if (!accept) {
+//CheckMethods.PrintInfoMessage("not accept ！！！！！！！");
+//for (LinkFilter lf : linkFilters) {
+//	CheckMethods.PrintInfoMessage(lf.filterRegex+"\t"+url);
+//}
+			}
+			
 		}
 		return set;
 	}

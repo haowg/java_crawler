@@ -3,55 +3,41 @@ package mian.Crawler;
 import htmlPaser.htmlFilter;
 import htmlPaser.parseByRule;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import mian.tools.CheckMethods;
 import mian.tools.HtmlParserTool;
 
 import org.jsoup.nodes.Document;
 
-import filter.SimpleBloomFilter;
 import Froniter.BDBFrontier;
+import filter.SimpleBloomFilter;
 
 public class GeneralCrawler implements Runnable{
 
-	LinkFilter filter = null;
+	HashSet<LinkFilter> LinkFilters = null;
 	private String homeDirectory = null;
 	private String crawlerName = null;
 	HashSet<CrawlUrl> seeds = null;
-	HashMap<String,String> rules = null;
+	List<String> rules = null;
 
-	public GeneralCrawler(final String filterRegex, String homeDirectory,
-			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, HashMap<String,String> rules) {
-		// 定义过滤器
-		LinkFilter filter = new LinkFilter() {
-			public boolean accept(String url) {
-				Pattern p = Pattern.compile(filterRegex);
-				Matcher m = p.matcher(url);
-				if (m.matches()) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		};
+	public GeneralCrawler(final HashSet<LinkFilter> linkFilters, String homeDirectory,
+			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, List<String> rules2) {
 		
-		this.filter = filter;
+		this.LinkFilters = linkFilters;
 		this.homeDirectory = homeDirectory;
 		this.crawlerName = crawlerName;
 		this.seeds = jingdongSeeds;
-		this.rules = rules;
+		this.rules = rules2;
 //		System.err.println(filterRegex + "\t "+homeDirectory+"\t"+crawlerName);
 //		for (CrawlUrl crawlUrl : jingdongSeeds) {
 //			System.err.println(crawlUrl.getOriUrl());
 //		}
-		for (String key : rules.keySet()) {
-			CheckMethods.PrintInfoMessage(key+":\t"+rules.get(key));
+		for (String rule : rules2) {
+			CheckMethods.PrintInfoMessage("GC54\t"+rule.split("}")[0].substring(1)+":\t"+rule.split("}")[1]);
 		}
 	}
 	
@@ -67,7 +53,7 @@ public class GeneralCrawler implements Runnable{
 	 * @param rules2 
 	 */
 
-	public void crawlingbyDBFrt(HashSet<CrawlUrl> seeds2, HashMap<String, String> rules2) {
+	public void crawlingbyDBFrt(HashSet<CrawlUrl> seeds2, List<String> rules2) {
 
 		// 初始化 URL 队列
 		
@@ -105,7 +91,7 @@ public class GeneralCrawler implements Runnable{
 			visitedSet.putUrl(visitUrl);
 			CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
 			// 提取出下载网页中的 URL
-			Set<String> links = HtmlParserTool.extracLinks(doc, filter);
+			Set<String> links = HtmlParserTool.extracLinks(doc, LinkFilters);
 			// 新的未访问的 URL 入队
 			for (String link : links) {
 				CrawlUrl curl = new CrawlUrl();
@@ -118,11 +104,14 @@ public class GeneralCrawler implements Runnable{
 	}
 
 
-	private void getLMData(Document doc, String oriUrl, HashMap<String, String> myrules) {
-		for (String rexgex : myrules.keySet()) {
-			if (htmlFilter.accept(rexgex, oriUrl)) {
-				CheckMethods.PrintInfoMessage("accapt");
-				parseByRule.parse(myrules.get(rexgex), doc);
+	private void getLMData(Document doc, String oriUrl, List<String> rules2) {
+		for (String rule : rules2) {
+			String regex = rule.split("}")[0].substring(1);
+			String selectRule = rule.split("}")[1];
+			if (htmlFilter.accept(regex, oriUrl)) {
+				CheckMethods.PrintInfoMessage("GC124"+"accapt");
+				parseByRule.parse(selectRule, doc);
+				System.out.println("getLMDATA"+regex+"\t"+selectRule);
 			}
 		}
 		
@@ -146,8 +135,10 @@ public class GeneralCrawler implements Runnable{
 	public static void main(String[] args) {
 		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
 		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
+		HashSet<LinkFilter> linkFilters = new HashSet<>();
+		linkFilters.add(new LinkFilter(".*jd\\.com.*"));
 		
-		GeneralCrawler crawler = new GeneralCrawler(".*jd\\.com.*","D:\\bsdb","jingdong",jingdongSeeds,new HashMap<String, String>());
+		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds, new ArrayList<String>());
 		
 		new Thread(crawler).start();
 	}

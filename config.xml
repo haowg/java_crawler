@@ -1,14 +1,36 @@
 <config
 
- FILTERREGEX = ".*jd\\.com.*"
- HOMEDIRECTORY = "D:\\bsdb"
- CRAWLERNAME = "jingdong"
+ SEED = "http://www.jd.com/allSort.aspx"
+ #SEED = "http://v.iqilu.com/ggpd/xcll"
+
+ FILTERREGEX = ".*list\.jd\.com.*"
+ FILTERREGEX = ".*item\.jd\.com.*"
+ FILTERREGEX = ".*club\.jd\.com.*"
+ FILTERREGEX = ".*club\.jd\.com/review/.*"
  
- SELECTRULE = "{.*club.jd.com.*}div#comments-list  div > div.i-item > div.comment-content>dl dd"
+ HOMEDIRECTORY = "D:\\bsdb"
+ CRAWLERNAME = "jingdongNeww"
+ 
+ SELECTRULE = "{.*item.jd.com.*}div[id~=^consult-[0-9]+]"
+ SELECTRULE = "{.*item.jd.com.*}div#comments-list  div > div.i-item > div.comment-content>dl dd"
  SELECTRULE = "{.*club.jd.com/review/.*}div#comments-list  div > div.i-item > div.comment-content>dl dd"
  
+/>
+<config
+
  SEED = "http://www.jd.com/allSort.aspx"
- SEED = "http://v.iqilu.com/ggpd/xcll"
+ #SEED = "http://v.iqilu.com/ggpd/xcll"
+
+ FILTERREGEX = ".*list\.jd\.com.*"
+ FILTERREGEX = ".*item\.jd\.com.*"
+ FILTERREGEX = ".*club\.jd\.com.*"
+ FILTERREGEX = ".*club\.jd\.com/review/.*"
  
+ HOMEDIRECTORY = "D:\\bsdb"
+ CRAWLERNAME = "jingdongNew"
+ 
+ SELECTRULE = "{.*item.jd.com.*}div[id~=^consult-[0-9]+]"
+ SELECTRULE = "{.*item.jd.com.*}div#comments-list  div > div.i-item > div.comment-content>dl dd"
+ SELECTRULE = "{.*club.jd.com/review/.*}div#comments-list  div > div.i-item > div.comment-content>dl dd"
  
 />
