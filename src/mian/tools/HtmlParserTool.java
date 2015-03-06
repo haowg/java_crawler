@@ -14,7 +14,12 @@ public class HtmlParserTool {
 	/*
 	 * 访问url并获得网页内容
 	 */
-	public static  Document getDocument(String url) {
+	public static  Document getDocument(String url){
+		Document doc = getDocument(url,0);
+		return doc;
+	}
+	private static  Document getDocument(String url,int level) {
+		if(level >= 6) return null;
 		Document doc = null;
 		try {
 			doc = Jsoup
@@ -29,7 +34,7 @@ public class HtmlParserTool {
 			if(msg.toLowerCase().contains("time")){
 				System.err.println("[error]: connect to "+ url + " time out.");
 //			}else if(rule){
-				doc = getDocument(url);
+				doc = getDocument(url,++level);
 			}else{
 				System.err.println("[error]: " + e.getMessage()+url);
 			}

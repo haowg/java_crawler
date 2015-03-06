@@ -57,6 +57,7 @@ System.exit(-1);
 		dbConfig.setTransactional(true);
 		dbConfig.setSortedDuplicates(false);
 		dbConfig.setAllowCreate(true);
+//		dbConfig.set
 		// ´ò¿ª
 		catalogdatabase = env.openDatabase(null, CLASS_CATALOG, dbConfig);
 		javaCatalog = new StoredClassCatalog(catalogdatabase);

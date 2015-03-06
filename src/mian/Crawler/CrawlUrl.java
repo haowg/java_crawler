@@ -4,9 +4,14 @@ import java.io.Serializable;
 
 public class CrawlUrl implements Serializable{
 
-	public CrawlUrl(String oriUrl){
-			this.oriUrl = oriUrl;
-		}
+//	public CrawlUrl(String oriUrl){
+//			this.oriUrl = oriUrl;
+//			this.layer = 0;
+//		}
+	public CrawlUrl(String oriUrl,int layer){
+		this.oriUrl = oriUrl;
+		this.layer = layer;
+	}
 	
 	public CrawlUrl() {
 	}
@@ -18,12 +23,11 @@ public class CrawlUrl implements Serializable{
 
 	
 	private String oriUrl;// 原始 URL 的值，主机部分是域名
-	
-	
-	private String url; // URL 的值，主机部分是 IP，为了防止重复主机的出现
-	private int urlNo; // URL NUM
-	private String type; // 文章类型
 	private int layer; //爬取的层次， 从种子开始， 依次为第0层， 第1层...
+	
+//	private String url; // URL 的值，主机部分是 IP，为了防止重复主机的出现
+//	private int urlNo; // URL NUM
+//	private String type; // 文章类型
 //	private int statusCode; // 获取 URL 返回的结果码
 //	private int hitNum; // 此 URL 被其他文章引用的次数
 //	private String charSet; // 此 URL 对应文章的汉字编码
@@ -42,24 +46,6 @@ public class CrawlUrl implements Serializable{
 	}
 	public void setOriUrl(String oriUrl) {
 		this.oriUrl = oriUrl;
-	}
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	public int getUrlNo() {
-		return urlNo;
-	}
-	public void setUrlNo(int urlNo) {
-		this.urlNo = urlNo;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
 	}
 	public int getLayer() {
 		return layer;

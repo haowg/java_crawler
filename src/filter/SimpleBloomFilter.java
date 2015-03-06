@@ -59,6 +59,7 @@ CheckMethods.PrintDebugMessage(filterNum+++"\t fileterNum"+"\t"+value);
 		for (SimpleHash f : func) {
 			ret = ret && bits.get(f.hash(value));
 		}
+//CheckMethods.PrintInfoMessage(ret+"\t"+value);
 		return ret;
 	}
 

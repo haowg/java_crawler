@@ -3,7 +3,11 @@ package Froniter;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.FileUtils;
 
 import mian.Crawler.CrawlUrl;
@@ -28,27 +32,23 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 
 	@SuppressWarnings("rawtypes")
 	private StoredMap pendingUrisDB = null;
-	SimpleBloomFilter sbf = null;
+	SimpleBloomFilter sbf_link = null;
+	SimpleBloomFilter sbf_dturl = null;
 	private boolean isunvisited = false;
 	private String dbName = "db";
 	private String homeDirectory = null;
-
+	
 	// 使用默认的缓存大小构造函数
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public BDBFrontier(String homeDirectory, String dbName,
-			boolean isunvisited, SimpleBloomFilter sbf)
+			boolean isunvisited, SimpleBloomFilter sbf_link,SimpleBloomFilter sbf_dturl)
 			throws DatabaseException {
 
 		super(homeDirectory, dbName);
 		this.dbName = dbName;
-		this.sbf = sbf;
+		this.sbf_link = sbf_link;
+		this.sbf_dturl = sbf_dturl;
 		this.homeDirectory = homeDirectory;
-		if (!isunvisited) {
-			if (!getEveryItem()) {
-				CheckMethods.PrintDebugMessage("read exist data fault!");
-				System.exit(-1);
-			}
-		}
 
 		CheckMethods.PrintInfoMessage("dbName:\t" + dbName);
 		this.isunvisited = isunvisited;
@@ -56,6 +56,14 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 		EntryBinding valueBinding = new SerialBinding(javaCatalog,
 				CrawlUrl.class);
 		pendingUrisDB = new StoredMap(database, keyBinding, valueBinding, true);
+		
+		if (!isunvisited) {
+//			if (!getEveryItem()) {
+			if (!prestrain()) {
+				CheckMethods.PrintDebugMessage("read exist data fault!");
+				System.exit(-1);
+			}
+		}
 	}
 
 	// 获得并删除下一条记录
@@ -69,13 +77,35 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 			result = entry.getValue();
 			delete(entry.getKey());
 		}
+		
 		return result;
 	}
 
+	/*
+	 * 判断是不是动态网页
+	 */
+	public boolean isDynamicUrl(String url){
+		String regex = "(.*(/|com|cn|gov|edu|jsp|php|asp)|.*index.*)";
+//		String regex_index = ".*(index|list).*";
+//		Pattern p_index = Pattern.compile(regex_index);
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(url.split("#")[0].split("\\?")[0]);
+//		Matcher m_index = p_index.matcher(url.split("#")[0].split("\\?")[0]);
+		return m.matches();//||m_index.matches();
+	}
+	public boolean isDynamicUrl(CrawlUrl url){
+		return isDynamicUrl(url.getOriUrl());
+	}
+	
 	// 存入 CrawlURL
 
 	public boolean putUrl(CrawlUrl url) {
-		put(url.getOriUrl(), url);
+		
+		if( (!isunvisited)&&isDynamicUrl(url) ){
+			sbf_dturl.add(url);
+		}else{
+			put(url.getLayer()+"____"+url.getOriUrl(), url);
+		}
 		return true;
 	}
 
@@ -89,7 +119,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 				pendingUrisDB.put(key, value);
 			}
 		} else {
-			sbf.add((CrawlUrl) value);
+			sbf_link.add((CrawlUrl) value);
 			pendingUrisDB.put(key, value);
 			sync();
 		}
@@ -169,15 +199,17 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 			if (myCursor.getFirst(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 				String theKey = new String(foundKey.getData(), "UTF-8");
 				theKey = theKey.substring(3);
-				// String theData = new String(foundData.getData(), "UTF-8");
+//				 String theData = new String(foundData.getData(), "UTF-8");
 				// resultList.add(theKey);
-				sbf.add(theKey);
+				sbf_link.add(theKey);
 
 				while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 					theKey = new String(foundKey.getData(), "UTF-8");
 					theKey = theKey.substring(3);
-					// theData = new String(foundData.getData(), "UTF-8");
-					sbf.add(theKey);
+//					 theData = new String(foundData.getData(), "GBK");
+					if(!isDynamicUrl(theKey)){
+						sbf_link.add(theKey);
+					}
 				}
 			}
 			myCursor.close();
@@ -200,16 +232,34 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 			}
 			return false;
 		}
-
 	}
 
+	@SuppressWarnings("unchecked")
+	public boolean prestrain() {
+		CrawlUrl result = null;
+		Iterator<?> iter = pendingUrisDB.entrySet().iterator();
+		try{
+		while (iter.hasNext()) {
+			// Set entrys = pendingUrisDB.entrySet();
+			Entry<String, CrawlUrl> entry = (Entry<String, CrawlUrl>) iter.next();
+			result = entry.getValue();
+			if(!isDynamicUrl(entry.getKey())){
+				sbf_link.add(result);
+			}
+		}
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	/*
 	 * @see Froniter.Frontier#visited(mian.Crawler.CrawlUrl) 
 	 * 是否访问过，利用bloomfilter
 	 */
 	@Override
 	public boolean visited(CrawlUrl url) {
-		if (sbf.contains(url)) {
+		if (sbf_link.contains(url)||sbf_dturl.contains(url)) {
 			return true;
 		}
 		return false;
@@ -249,7 +299,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 	public static void main(String[] args) {
 		try {
 			BDBFrontier bBDBFrontier = new BDBFrontier("D:\\bdb", "url", false,
-					new SimpleBloomFilter());
+					new SimpleBloomFilter(),new SimpleBloomFilter());
 			CrawlUrl url = new CrawlUrl();
 			url.setOriUrl("http://www.163.com");
 			// bBDBFrontier.put("test", "value");

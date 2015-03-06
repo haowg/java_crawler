@@ -3,6 +3,8 @@ package mian.Crawler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import filter.SimpleBloomFilter;
 import Froniter.BDBFrontier;
@@ -16,8 +18,9 @@ public class test {
 		long time1 = System.currentTimeMillis();
 		test t = new test();
 		
+		t.testRegex("https://www.baidu.com/jsp?wd=Dangling%20meta%20character%20%27%3F%27%20near%20index%200&rsv_spt=1&issp=1&f=8&rsv_bp=0&rsv_idx=2&ie=utf-8&tn=baiduhome_pg&rsv_enter=1&rsv_pq=f4736661000061d0&rsv_t=83a6zu4dY%2BZruDu9dF0LsA9fj%2BW7yzmUngBIO%2FZ%2FBBFqRUlg%2FgStwf3A7ATOi6QrvWsy&inputT=1236&oq=win7%20vs&rsv_n=2&rsv_sug3=20&rsv_sug2=0&rsv_sug4=1236&rsv_sug=1");
 //		t.testCrawler();
-		t.checkdbdb("jingdongvisitedSet");
+//		t.checkdbdb("jingdongvisitedSet");
 //		t.testBDB3();
 //		t.testBDB();
 //		t.testotherBDB();
@@ -30,7 +33,7 @@ public class test {
 		
 //		CrawlUrl[] jingdongSeeds = new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")};
 		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
-		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
+		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx", 0));
 		HashSet<LinkFilter> linkFilters = new HashSet<>();
 		linkFilters.add(new LinkFilter(".*jd\\.com.*"));
 		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds,new ArrayList<String>());
@@ -76,9 +79,18 @@ public class test {
 
 	}
 	
+	void testRegex(String url){
+		String regex = ".*(/|com|cn|gov|edu|jsp|php|asp)";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(url.split("#")[0].split("\\?")[0]);
+		if(m.matches()){
+			System.out.println("match !");
+		}
+	}
+	
 	void testBDB(){
 		try {
-			BDBFrontier bBDBFrontier = new BDBFrontier("D:\\bsdb","testURLs", true,new SimpleBloomFilter());
+			BDBFrontier bBDBFrontier = new BDBFrontier("D:\\bsdb","testURLs", true,new SimpleBloomFilter(),new SimpleBloomFilter());
 			CrawlUrl url = new CrawlUrl();
 			url.setOriUrl("http://www.163.com");
 			bBDBFrontier.putUrl(url);

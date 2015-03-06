@@ -3,7 +3,6 @@ package mian.Crawler;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 
 
 
@@ -27,7 +25,8 @@ public class Entrance {
 		Entrance ent = new Entrance();
 //		ent.parseConfig("config.xml");
 //		ent.parseConfig("config2.xml");
-		ent.parse("config.xml");
+//		ent.parse("News_config.xml");
+		ent.parse("qqNews_config2.xml");
 	}
 	private void parse(String configPath) {
 		String configxml = "";
@@ -36,7 +35,6 @@ public class Entrance {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		boolean isfirst = true;
 		if (!checkNames(configxml)) {
 			CheckMethods.PrintDebugMessage("Name is same ! please check it");
 			System.exit(0);
@@ -48,7 +46,9 @@ public class Entrance {
 			parseConfig(config);
 		}
 	}
-	
+	/*
+	 * 检查各个线程名是否一样
+	 */
 	private boolean checkNames(String configxml) {
 		String[] configs = configxml.split("<config");
 		HashSet<String> nameSet = new HashSet<>();
@@ -81,7 +81,7 @@ public class Entrance {
 				}
 				String seed = line.trim();
 //				String seed = line.trim().substring(line.indexOf("SEED=") + 4);
-				seeds.add(new CrawlUrl(seed));
+				seeds.add(new CrawlUrl(seed,0));
 			}
 		}
 		return seeds;
@@ -145,6 +145,7 @@ public class Entrance {
 		HashSet<LinkFilter> linkFilters  =  null;
 		String homeDirectory = "";
 		String crawlerName = "";
+		int maxlayer = Integer.MAX_VALUE;
 		Entrance ent = new Entrance();
 		Document doc = Jsoup.parse(configxml);
 		Element e = doc.getElementsByTag("config").first();
@@ -152,10 +153,13 @@ public class Entrance {
 		linkFilters = getFilters(configxml);
 		homeDirectory = e.attr("homeDirectory");
 		crawlerName = e.attr("crawlerName");
+		if(!(e.attr("maxlayer").equals("null")||e.attr("maxlayer").equals(""))){
+			maxlayer = Integer.parseInt(e.attr("maxlayer"));
+		}
 //		System.out.println(filterRegex + "\t" + homeDirectory + "\t"+ crawlerName);
 		HashSet<CrawlUrl> seeds =  ent.getseeds(configxml);
 		List<String> rules = ent.getrules(configxml);
-		GeneralCrawler crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules);
+		GeneralCrawler crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer);
 		crawler.toString();
 		new Thread(crawler).start();
 	}

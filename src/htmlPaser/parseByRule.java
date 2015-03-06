@@ -7,16 +7,27 @@ import mian.tools.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 public class parseByRule {
-	public static void parse(String rule,Document doc){
+	public static void parse(String rule,Document doc,String name,String url){
 		try {
-			Elements eles = doc.select(rule);
+			name = name+".txt";
+			Elements eles = null;
+			eles = doc.select(rule);
+			if(!eles.toString().trim().equals("")){
+//				System.out.println("eles----"+eles+"-------");
+				Utils.write(url+"\n", name);
+			}
 //			System.out.println("eles--------------"+eles+"\t"+rule);
 			for (Element element : eles) {
-//				System.out.println(element);
-				Utils.write(element.toString(), "ss");
+//CheckMethods.PrintInfoMessage(element.toString());
+				String text = Jsoup.clean(element.toString(), Whitelist.none()).replaceAll("&[^;]*;", "");
+//				String text = element.toString().replaceAll("<[^>]*[bBPp][^>]*>", "\n").replaceAll("<[^>]*>\n*","" ).replaceAll("((\r\n)|\n| |¡¡|\t)+","\n");
+//				String text = element.toString().replaceAll("<[^>]*>\n*","" );
+				System.out.println(text);
+				Utils.write(text+"\n", name);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -25,7 +36,7 @@ public class parseByRule {
 	}
 	public static void main(String[] args) {
 		try {
-			parse("div[id~=^consult-[0-9]+]", Jsoup.connect("http://item.jd.com/657799.html").get());
+			parse("div#endText", Jsoup.connect("http://news.163.com/10/0101/21/5RVMPI4V000120GR.html").get(), "test","http://item.jd.com/657799.html");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

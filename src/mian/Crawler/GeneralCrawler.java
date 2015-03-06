@@ -23,15 +23,21 @@ public class GeneralCrawler implements Runnable{
 	private String crawlerName = null;
 	HashSet<CrawlUrl> seeds = null;
 	List<String> rules = null;
+	private int layer = 0;
 
 	public GeneralCrawler(final HashSet<LinkFilter> linkFilters, String homeDirectory,
 			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, List<String> rules2) {
+		this(linkFilters, crawlerName, crawlerName, jingdongSeeds, rules2, Integer.MAX_VALUE);
+	}
+	public GeneralCrawler(final HashSet<LinkFilter> linkFilters, String homeDirectory,
+			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, List<String> rules2,int layer) {
 		
 		this.LinkFilters = linkFilters;
 		this.homeDirectory = homeDirectory;
 		this.crawlerName = crawlerName;
 		this.seeds = jingdongSeeds;
 		this.rules = rules2;
+		this.layer = layer;
 //		System.err.println(filterRegex + "\t "+homeDirectory+"\t"+crawlerName);
 //		for (CrawlUrl crawlUrl : jingdongSeeds) {
 //			System.err.println(crawlUrl.getOriUrl());
@@ -59,10 +65,11 @@ public class GeneralCrawler implements Runnable{
 		
 		
 		SimpleBloomFilter sbf = new SimpleBloomFilter();
+		SimpleBloomFilter sbf_dturl = new SimpleBloomFilter();
 		BDBFrontier unVisitedSet = new BDBFrontier(homeDirectory, crawlerName
-				+ "unVisitedSet", true, sbf);
-		BDBFrontier visitedSet = new BDBFrontier("D:\\bsdb", crawlerName
-				+ "visitedSet", false, sbf);
+				+ "unVisitedSet", true, sbf,sbf_dturl);
+		BDBFrontier visitedSet = new BDBFrontier(homeDirectory, crawlerName
+				+ "visitedSet", false, sbf,sbf_dturl);
 		initDBFrtrawlerWithSeeds(seeds2, unVisitedSet);
 
 		CheckMethods.PrintDebugMessage("unvisitedSet size:\t"
@@ -79,23 +86,23 @@ public class GeneralCrawler implements Runnable{
 			try {
 				visitUrl = unVisitedSet.pool();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (visitUrl == null)
+			if (visitUrl == null||visitUrl.getLayer()>layer)
 				continue;
 			Document doc = HtmlParserTool.getDocument(visitUrl.getOriUrl());
 			getLMData(doc,visitUrl.getOriUrl(),rules2);
-			CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl());
+CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl()+"\t"+visitUrl.getLayer());
 			// 该 URL 放入已访问的 URL 中
 			visitedSet.putUrl(visitUrl);
-			CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
+CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
 			// 提取出下载网页中的 URL
 			Set<String> links = HtmlParserTool.extracLinks(doc, LinkFilters);
 			// 新的未访问的 URL 入队
 			for (String link : links) {
 				CrawlUrl curl = new CrawlUrl();
 				curl.setOriUrl(link);
+				curl.setLayer(visitUrl.getLayer()+1);
 				unVisitedSet.putUrl(curl);
 			}
 		}
@@ -108,10 +115,13 @@ public class GeneralCrawler implements Runnable{
 		for (String rule : rules2) {
 			String regex = rule.split("}")[0].substring(1);
 			String selectRule = rule.split("}")[1];
+//CheckMethods.PrintInfoMessage(regex+"\t:\t"+oriUrl);
 			if (htmlFilter.accept(regex, oriUrl)) {
-				CheckMethods.PrintInfoMessage("GC124"+"accapt");
-				parseByRule.parse(selectRule, doc);
+				CheckMethods.PrintInfoMessage("GC120"+"accapt");
+				parseByRule.parse(selectRule, doc,crawlerName,oriUrl);
 				System.out.println("getLMDATA"+regex+"\t"+selectRule);
+			}else{
+CheckMethods.PrintInfoMessage("not accept!!");
 			}
 		}
 		
@@ -134,7 +144,7 @@ public class GeneralCrawler implements Runnable{
 	// 测试函数
 	public static void main(String[] args) {
 		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
-		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx"));
+		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx",0));
 		HashSet<LinkFilter> linkFilters = new HashSet<>();
 		linkFilters.add(new LinkFilter(".*jd\\.com.*"));
 		
