@@ -3,6 +3,7 @@ package mian.Crawler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,7 @@ import mian.Crawler.CrawlUrl;
 import mian.bdbUtil.BdbPersistentQueue;
 import mian.bdbUtil.Berkeley_DB;
 import mian.tools.CheckMethods;
+import mian.tools.myCookies;
 
 public class test {
 	public static void main(String[] args) {
@@ -29,6 +31,10 @@ public class test {
 		long time2 = System.currentTimeMillis();
 		CheckMethods.PrintInfoMessage("time\t"+String.valueOf(time2 - time1));
 	}
+	void testJson(){
+		myCookies cookies = new myCookies("x.txt");
+		System.out.println(cookies.getCookies());
+	}
 	void testCrawler(){
 		
 //		CrawlUrl[] jingdongSeeds = new CrawlUrl[] {new CrawlUrl("http://www.jd.com/allSort.aspx")};
@@ -36,7 +42,7 @@ public class test {
 		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx", 0));
 		HashSet<LinkFilter> linkFilters = new HashSet<>();
 		linkFilters.add(new LinkFilter(".*jd\\.com.*"));
-		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds,new ArrayList<String>());
+		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds,new ArrayList<String>(), Integer.MAX_VALUE);
 		
 		new Thread(crawler).start();
 //		new Thread(new MyCrawler(".*jd\\.com.*","D:\\bsdb","jd",jingdongSeeds)).start();

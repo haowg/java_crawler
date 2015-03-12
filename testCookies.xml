@@ -1,0 +1,15 @@
+<config
+
+ SEED = "http://weibo.cn/renminwang"
+ COOKIESLOC = "x.txt"
+
+ #MAXLAYER = "6"
+ 
+ FILTERREGEX = ".*renminwang.*page.*"
+ 
+ HOMEDIRECTORY = "D:\\bsdb"
+ CRAWLERNAME = "weibo_renminwang_3_11_4"
+ 
+ SELECTRULE = "{.*renminwang.*}div > div > span.ctt"
+ 
+/>

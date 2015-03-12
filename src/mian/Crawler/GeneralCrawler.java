@@ -1,16 +1,20 @@
 package mian.Crawler;
 
+import htmlPaser.HtmlParserTool;
 import htmlPaser.htmlFilter;
 import htmlPaser.parseByRule;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import mian.tools.CheckMethods;
-import mian.tools.HtmlParserTool;
+import mian.tools.myCookies;
 
+import org.apache.commons.io.FileUtils;
 import org.jsoup.nodes.Document;
 
 import Froniter.BDBFrontier;
@@ -23,12 +27,9 @@ public class GeneralCrawler implements Runnable{
 	private String crawlerName = null;
 	HashSet<CrawlUrl> seeds = null;
 	List<String> rules = null;
-	private int layer = 0;
+	private int maxLayer = 0;
+	myCookies cookies = null;
 
-	public GeneralCrawler(final HashSet<LinkFilter> linkFilters, String homeDirectory,
-			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, List<String> rules2) {
-		this(linkFilters, crawlerName, crawlerName, jingdongSeeds, rules2, Integer.MAX_VALUE);
-	}
 	public GeneralCrawler(final HashSet<LinkFilter> linkFilters, String homeDirectory,
 			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, List<String> rules2,int layer) {
 		
@@ -37,7 +38,7 @@ public class GeneralCrawler implements Runnable{
 		this.crawlerName = crawlerName;
 		this.seeds = jingdongSeeds;
 		this.rules = rules2;
-		this.layer = layer;
+		this.maxLayer = layer;
 //		System.err.println(filterRegex + "\t "+homeDirectory+"\t"+crawlerName);
 //		for (CrawlUrl crawlUrl : jingdongSeeds) {
 //			System.err.println(crawlUrl.getOriUrl());
@@ -47,6 +48,13 @@ public class GeneralCrawler implements Runnable{
 		}
 	}
 	
+	public GeneralCrawler(HashSet<LinkFilter> linkFilters2,
+			String homeDirectory2, String crawlerName2,
+			HashSet<CrawlUrl> seeds2, List<String> rules2, int maxlayer,
+			myCookies cookies) {
+		this(linkFilters2, homeDirectory2, crawlerName2, seeds2, rules2, maxlayer);
+		this.cookies = cookies;
+	}
 	public void run() {
 		crawlingbyDBFrt(seeds,rules);
 	}
@@ -88,9 +96,17 @@ public class GeneralCrawler implements Runnable{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (visitUrl == null||visitUrl.getLayer()>layer)
+			if (visitUrl == null||visitUrl.getLayer()>maxLayer)
 				continue;
-			Document doc = HtmlParserTool.getDocument(visitUrl.getOriUrl());
+			Document doc = null;
+			if(cookies==null){
+				doc = HtmlParserTool.getDocument(visitUrl.getOriUrl());
+CheckMethods.PrintInfoMessage("no cookies");
+CheckMethods.PrintInfoMessage("------"+visitUrl.getOriUrl()+"-----"+visitUrl.getLayer()+"-----");
+			}else{
+				doc = HtmlParserTool.getDocument(visitUrl.getOriUrl(), cookies);
+CheckMethods.PrintInfoMessage("have cookies");
+			}
 			getLMData(doc,visitUrl.getOriUrl(),rules2);
 CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl()+"\t"+visitUrl.getLayer());
 			// 该 URL 放入已访问的 URL 中
@@ -121,7 +137,7 @@ CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
 				parseByRule.parse(selectRule, doc,crawlerName,oriUrl);
 				System.out.println("getLMDATA"+regex+"\t"+selectRule);
 			}else{
-CheckMethods.PrintInfoMessage("not accept!!");
+CheckMethods.PrintInfoMessage("getLMData not accept!!");
 			}
 		}
 		
@@ -148,7 +164,7 @@ CheckMethods.PrintInfoMessage("not accept!!");
 		HashSet<LinkFilter> linkFilters = new HashSet<>();
 		linkFilters.add(new LinkFilter(".*jd\\.com.*"));
 		
-		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds, new ArrayList<String>());
+		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds, new ArrayList<String>(), Integer.MAX_VALUE);
 		
 		new Thread(crawler).start();
 	}

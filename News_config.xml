@@ -1,0 +1,13 @@
+<config
+
+ SEED = "http://news.163.com/"
+
+ FILTERREGEX = ".*news\.163\.com/1.*"
+ 
+ HOMEDIRECTORY = "D:\\bsdb"
+ CRAWLERNAME = "163News_"
+ 
+ SELECTRULE = "{.*news.163.com.*html.*}div#endText"
+ 
+/>
+

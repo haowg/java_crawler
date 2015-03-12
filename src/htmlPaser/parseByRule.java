@@ -11,6 +11,9 @@ import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 public class parseByRule {
+	/*
+	 * 
+	 */
 	public static void parse(String rule,Document doc,String name,String url){
 		try {
 			name = name+".txt";
@@ -34,6 +37,9 @@ public class parseByRule {
 		}
 		
 	}
+	/*
+	 * test method
+	 */
 	public static void main(String[] args) {
 		try {
 			parse("div#endText", Jsoup.connect("http://news.163.com/10/0101/21/5RVMPI4V000120GR.html").get(), "test","http://item.jd.com/657799.html");

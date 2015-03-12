@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import mian.tools.CheckMethods;
+import mian.tools.myCookies;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -26,14 +27,16 @@ public class Entrance {
 //		ent.parseConfig("config.xml");
 //		ent.parseConfig("config2.xml");
 //		ent.parse("News_config.xml");
-		ent.parse("qqNews_config2.xml");
+		ent.parse("testCookies.xml");
+//		ent.parse("qqNews_config2.xml");
 	}
 	private void parse(String configPath) {
 		String configxml = "";
 		try {
 			configxml = FileUtils.readFileToString(new File(configPath));
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			CheckMethods.PrintDebugMessage(e.getMessage());
 		}
 		if (!checkNames(configxml)) {
 			CheckMethods.PrintDebugMessage("Name is same ! please check it");
@@ -145,6 +148,8 @@ public class Entrance {
 		HashSet<LinkFilter> linkFilters  =  null;
 		String homeDirectory = "";
 		String crawlerName = "";
+		String cookieLocation = "";
+		myCookies cookies = null;
 		int maxlayer = Integer.MAX_VALUE;
 		Entrance ent = new Entrance();
 		Document doc = Jsoup.parse(configxml);
@@ -153,14 +158,27 @@ public class Entrance {
 		linkFilters = getFilters(configxml);
 		homeDirectory = e.attr("homeDirectory");
 		crawlerName = e.attr("crawlerName");
+		
+		if(!(e.attr("cookiesloc").equals("null")||e.attr("cookiesloc").equals(""))){
+			cookieLocation = e.attr("cookiesloc");
+			cookies = new myCookies(cookieLocation);
+		}
 		if(!(e.attr("maxlayer").equals("null")||e.attr("maxlayer").equals(""))){
 			maxlayer = Integer.parseInt(e.attr("maxlayer"));
 		}
 //		System.out.println(filterRegex + "\t" + homeDirectory + "\t"+ crawlerName);
 		HashSet<CrawlUrl> seeds =  ent.getseeds(configxml);
 		List<String> rules = ent.getrules(configxml);
-		GeneralCrawler crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer);
-		crawler.toString();
+		
+		
+		GeneralCrawler crawler = null;
+		if(cookies==null){
+			crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer);
+CheckMethods.PrintInfoMessage("Dont not have cookies");
+		}else{
+			crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer,cookies);
+CheckMethods.PrintInfoMessage("Yes there are cookies");
+		}
 		new Thread(crawler).start();
 	}
 	

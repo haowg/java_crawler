@@ -1,10 +1,15 @@
-package mian.tools;
+package htmlPaser;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import mian.Crawler.LinkFilter;
+import mian.tools.CheckMethods;
+import mian.tools.myCookies;
 
+import org.jsoup.Connection.Method;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -42,6 +47,52 @@ public class HtmlParserTool {
 		}
 		if (doc == null) {
 			System.err.println("Á¬½ÓÊ§°Ü");
+		}
+		return doc;
+	}
+	public static Document getDocument(String url, myCookies cookies) {
+		Document doc = getDocument(url, cookies, 0);
+		return doc;
+	}
+	private static Document getDocument(String url, myCookies cookies,int level) {
+		if(level >=6)
+			return null;
+		Response res = null;
+		Document doc = new Document("");
+		try {
+			res=Jsoup
+					.connect(url)
+					.cookies(cookies.getCookies())
+					.timeout(8000)
+					.userAgent("Mozilla/5.0 (Windows NT 6.1; WO"
+									+ "W64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31")
+					.method(Method.GET)
+					.execute();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			CheckMethods.PrintDebugMessage(e.getMessage());
+		}
+		try {
+			if(res == null){
+				return doc;
+			}
+			doc = res.parse();
+			cookies.setCookies(res.cookies());
+			return doc;
+		} catch (IOException e) {
+			String msg = e.getMessage();
+			if(msg.toLowerCase().contains("time")){
+				System.err.println("[error]: connect to "+ url + " time out.");
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException threadex) {
+					threadex.printStackTrace();
+				}
+				doc = getDocument(url,cookies,level++);
+			}else{
+				CheckMethods.PrintDebugMessage("[error]: " + e.getMessage());
+			}
+//			e.printStackTrace();
 		}
 		return doc;
 	}
@@ -89,7 +140,7 @@ public class HtmlParserTool {
 	 */
 	public static Set<String> extracLinks(Document doc, HashSet<LinkFilter> linkFilters) {
 		Set<String> set = new HashSet<String>();
-
+CheckMethods.PrintInfoMessage("git other links");
 		if (doc == null) {
 			return set;
 		}
