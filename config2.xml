@@ -1,9 +1,0 @@
-<config
-
- FILTERREGEX = ".*jd\\.comsss.*"
- HOMEDIRECTORY = "D:\\bsdsssb"
- CRAWLERNAME = "jingdongsss"
- 
- SEED=http://www.jd.com/allSort.aspxsss
- SEED=http://v.iqilu.com/ggpd/xcllsssssssssssssssssssss
-/>
