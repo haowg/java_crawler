@@ -28,7 +28,7 @@ public class parseByRule {
 				String text = Jsoup.clean(element.toString(), Whitelist.none()).replaceAll("&[^;]*;", "");
 //				String text = element.toString().replaceAll("<[^>]*[bBPp][^>]*>", "\n").replaceAll("<[^>]*>\n*","" ).replaceAll("((\r\n)|\n| |¡¡|\t)+","\n");
 //				String text = element.toString().replaceAll("<[^>]*>\n*","" );
-				System.out.println(text);
+//				System.out.println(text);
 				Utils.write(text+"\n", name);
 			}
 		} catch (Exception e) {

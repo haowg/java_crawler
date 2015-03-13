@@ -4,8 +4,6 @@ import htmlPaser.HtmlParserTool;
 import htmlPaser.htmlFilter;
 import htmlPaser.parseByRule;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +12,6 @@ import java.util.Set;
 import mian.tools.CheckMethods;
 import mian.tools.myCookies;
 
-import org.apache.commons.io.FileUtils;
 import org.jsoup.nodes.Document;
 
 import Froniter.BDBFrontier;
@@ -133,11 +130,8 @@ CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
 			String selectRule = rule.split("}")[1];
 //CheckMethods.PrintInfoMessage(regex+"\t:\t"+oriUrl);
 			if (htmlFilter.accept(regex, oriUrl)) {
-CheckMethods.PrintInfoMessage("GC136"+"accapt");
 				parseByRule.parse(selectRule, doc,crawlerName,oriUrl);
-				System.out.println("getLMDATA"+regex+"\t"+selectRule);
-			}else{
-CheckMethods.PrintInfoMessage("getLMData not accept!!");
+//System.out.println("getLMDATA"+regex+"\t"+selectRule);
 			}
 		}
 		
