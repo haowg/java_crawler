@@ -108,7 +108,7 @@ CheckMethods.PrintInfoMessage("------"+visitUrl.getOriUrl()+"-----"+visitUrl.get
 CheckMethods.PrintInfoMessage("have cookies");
 			}
 			getLMData(doc,visitUrl.getOriUrl(),rules2);
-CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl()+"\t"+visitUrl.getLayer());
+CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl()+"\tlayer: "+visitUrl.getLayer());
 			// 该 URL 放入已访问的 URL 中
 			visitedSet.putUrl(visitUrl);
 CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
@@ -133,7 +133,7 @@ CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
 			String selectRule = rule.split("}")[1];
 //CheckMethods.PrintInfoMessage(regex+"\t:\t"+oriUrl);
 			if (htmlFilter.accept(regex, oriUrl)) {
-				CheckMethods.PrintInfoMessage("GC120"+"accapt");
+CheckMethods.PrintInfoMessage("GC136"+"accapt");
 				parseByRule.parse(selectRule, doc,crawlerName,oriUrl);
 				System.out.println("getLMDATA"+regex+"\t"+selectRule);
 			}else{

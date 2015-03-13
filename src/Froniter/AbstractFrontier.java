@@ -22,12 +22,13 @@ public abstract class AbstractFrontier {
 	protected Database database;
 	
 	
-	
-	
+	/*
+	 * 设置BerkeleyDB环境和数据库的配置
+	 */
 	public AbstractFrontier(String homeDirectory,String dbName) throws DatabaseException{
 		// 打开 env
 		File file = new File(homeDirectory);
-CheckMethods.PrintInfoMessage("Opening environment in: " + homeDirectory);
+CheckMethods.PrintDebugMessage("Opening environment in: " + homeDirectory);
         if(!file.exists()){
 CheckMethods.PrintDebugMessage("file not exists");
             try {
@@ -50,12 +51,14 @@ System.exit(-1);
 		envConfig.setTxnNoSyncVoid(true);//设定事务提交时是否写更改的数据到磁盘，true不写磁盘。
 //		envConfig.setTxnWriteNoSyncVoid(true);//设定事务在提交时，是否写缓冲的log到磁盘。如果写磁盘会影响性能，不写会影响事务的安全。随机应变。
 //		envConfig.setTxnWriteNoSyncVoid(false);
+		//未找到环境时是否主动创建
 		envConfig.setAllowCreate(true);
 		env = new Environment(new File(homeDirectory), envConfig);
 		// 设置 DatabaseConfig
 		DatabaseConfig dbConfig = new DatabaseConfig();
 		dbConfig.setTransactional(true);
 		dbConfig.setSortedDuplicates(false);
+		//允许主动创建
 		dbConfig.setAllowCreate(true);
 //		dbConfig.set
 		// 打开

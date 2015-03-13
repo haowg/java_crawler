@@ -1,29 +1,24 @@
 package mian.Crawler;
 
 import java.io.Serializable;
-
+/*
+ * 爬虫类，能够实例化
+ */
 public class CrawlUrl implements Serializable{
 
-//	public CrawlUrl(String oriUrl){
-//			this.oriUrl = oriUrl;
-//			this.layer = 0;
-//		}
 	public CrawlUrl(String oriUrl,int layer){
 		this.oriUrl = oriUrl;
 		this.layer = layer;
 	}
-	
-	public CrawlUrl() {
-	}
-
+	public CrawlUrl(){};
 	/**
-	 * 
+	 * 判断类的serialVersionUID来验证版本一致性
 	 */
 	private static final long serialVersionUID = 1234567890L;
 
 	
-	private String oriUrl;// 原始 URL 的值，主机部分是域名
-	private int layer; //爬取的层次， 从种子开始， 依次为第0层， 第1层...
+	private String oriUrl = "";// 原始 URL 的值，主机部分是域名
+	private int layer = 0; //爬取的层次， 从种子开始， 依次为第0层， 第1层...
 	
 //	private String url; // URL 的值，主机部分是 IP，为了防止重复主机的出现
 //	private int urlNo; // URL NUM

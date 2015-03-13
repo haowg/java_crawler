@@ -27,7 +27,9 @@ import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
 
 import filter.SimpleBloomFilter;
-
+/*
+ * 实现利用BerkeleyDB的队列
+ */
 public class BDBFrontier extends AbstractFrontier implements Frontier {
 
 	@SuppressWarnings("rawtypes")
@@ -66,7 +68,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 		}
 	}
 
-	// 获得并删除下一条记录
+	// 返回并删除下一条记录
 	@SuppressWarnings({ "unchecked" })
 	public CrawlUrl pool() throws Exception {
 		CrawlUrl result = null;
@@ -77,7 +79,6 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 			result = entry.getValue();
 			delete(entry.getKey());
 		}
-		
 		return result;
 	}
 
@@ -98,7 +99,6 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 	}
 	
 	// 存入 CrawlURL
-
 	public boolean putUrl(CrawlUrl url) {
 		
 		if( (!isunvisited)&&isDynamicUrl(url) ){
@@ -235,6 +235,9 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 	}
 
 	@SuppressWarnings("unchecked")
+	/*
+	 * 预加载数据库中的url到布隆过滤器中
+	 */
 	public boolean prestrain() {
 		CrawlUrl result = null;
 		Iterator<?> iter = pendingUrisDB.entrySet().iterator();

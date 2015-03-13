@@ -27,28 +27,78 @@ public class Entrance {
 //		ent.parseConfig("config.xml");
 //		ent.parseConfig("config2.xml");
 //		ent.parse("News_config.xml");
-		ent.parse("testCookies.xml");
+//		ent.parse("testCookies.xml");
+		ent.parse("testMerge.xml");
 //		ent.parse("qqNews_config2.xml");
 	}
+	/*
+	 * 读取检查xml配置文件，并分开每一个爬虫的配置
+	 */
 	private void parse(String configPath) {
 		String configxml = "";
 		try {
 			configxml = FileUtils.readFileToString(new File(configPath));
 		} catch (IOException e) {
 //			e.printStackTrace();
-			CheckMethods.PrintDebugMessage(e.getMessage());
+CheckMethods.PrintDebugMessage(e.getMessage());
 		}
 		if (!checkNames(configxml)) {
-			CheckMethods.PrintDebugMessage("Name is same ! please check it");
+CheckMethods.PrintDebugMessage("Name is same ! please check it");
 			System.exit(0);
 		}
 		String[] configs = configxml.split("<config");
 		for(int i = 1;i<configs.length;i++){
 			String config = "<config"+configs[i];
 //			System.out.println(config);
-			parseConfig(config);
+			parseConfigToCrawler(config);
 		}
 	}
+	
+	/*
+	 * 解析配置文件生成爬虫线程并启动
+	 */
+	private void parseConfigToCrawler(String configxml){
+		HashSet<LinkFilter> linkFilters  =  null;
+		String homeDirectory = "";
+		String crawlerName = "";
+		String cookieLocation = "";
+		myCookies cookies = null;
+		int maxlayer = Integer.MAX_VALUE;
+		Entrance ent = new Entrance();
+		Document doc = Jsoup.parse(configxml);
+		Element e = doc.getElementsByTag("config").first();
+
+		linkFilters = getFilters(configxml);
+		homeDirectory = e.attr("homeDirectory");
+		crawlerName = e.attr("crawlerName");
+		
+		if(!(e.attr("cookiesloc").equals("null")||e.attr("cookiesloc").equals(""))){
+			cookieLocation = e.attr("cookiesloc");
+			cookies = new myCookies(cookieLocation);
+		}
+		if(!(e.attr("maxlayer").equals("null")||e.attr("maxlayer").equals(""))){
+			try{
+			maxlayer = Integer.parseInt(e.attr("maxlayer"));
+			}catch(Exception ex){
+CheckMethods.PrintDebugMessage("MAXLAYER format is wrong please check it");
+			}
+		}
+//		System.out.println(filterRegex + "\t" + homeDirectory + "\t"+ crawlerName);
+		HashSet<CrawlUrl> seeds =  ent.getseeds(configxml);
+		List<String> rules = ent.getrules(configxml);
+		
+		
+		GeneralCrawler crawler = null;
+		if(cookies==null){
+			crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer);
+//CheckMethods.PrintInfoMessage("Dont not have cookies");
+		}else{
+			crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer,cookies);
+//CheckMethods.PrintInfoMessage("Yes there are cookies");
+		}
+		new Thread(crawler).start();
+	}
+	
 	/*
 	 * 检查各个线程名是否一样
 	 */
@@ -141,45 +191,6 @@ public class Entrance {
 		return filters;
 	}
 	
-	/*
-	 * 解析配置文件生成爬虫线程并启动
-	 */
-	private void parseConfig(String configxml){
-		HashSet<LinkFilter> linkFilters  =  null;
-		String homeDirectory = "";
-		String crawlerName = "";
-		String cookieLocation = "";
-		myCookies cookies = null;
-		int maxlayer = Integer.MAX_VALUE;
-		Entrance ent = new Entrance();
-		Document doc = Jsoup.parse(configxml);
-		Element e = doc.getElementsByTag("config").first();
 
-		linkFilters = getFilters(configxml);
-		homeDirectory = e.attr("homeDirectory");
-		crawlerName = e.attr("crawlerName");
-		
-		if(!(e.attr("cookiesloc").equals("null")||e.attr("cookiesloc").equals(""))){
-			cookieLocation = e.attr("cookiesloc");
-			cookies = new myCookies(cookieLocation);
-		}
-		if(!(e.attr("maxlayer").equals("null")||e.attr("maxlayer").equals(""))){
-			maxlayer = Integer.parseInt(e.attr("maxlayer"));
-		}
-//		System.out.println(filterRegex + "\t" + homeDirectory + "\t"+ crawlerName);
-		HashSet<CrawlUrl> seeds =  ent.getseeds(configxml);
-		List<String> rules = ent.getrules(configxml);
-		
-		
-		GeneralCrawler crawler = null;
-		if(cookies==null){
-			crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer);
-CheckMethods.PrintInfoMessage("Dont not have cookies");
-		}else{
-			crawler = new GeneralCrawler(linkFilters,homeDirectory,crawlerName,seeds,rules,maxlayer,cookies);
-CheckMethods.PrintInfoMessage("Yes there are cookies");
-		}
-		new Thread(crawler).start();
-	}
 	
 }

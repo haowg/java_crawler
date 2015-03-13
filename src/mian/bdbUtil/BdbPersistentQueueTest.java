@@ -6,7 +6,9 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.TestCase;
-
+/*
+ * Bdb∂”¡–≤‚ ‘¿‡
+ */
 public class BdbPersistentQueueTest extends TestCase{
     Queue<String> memoryQueue;
     Queue<String> persistentQueue;

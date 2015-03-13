@@ -12,7 +12,10 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
-
+/*
+ * 测试用json方式导出cookie后，利用其访问需要登录的网页
+ * 测试用代码
+ */
 public class jsonTest {
 	public static void main(String[] args) throws IOException {
 		String s = "";
@@ -23,6 +26,9 @@ public class jsonTest {
 			e.printStackTrace();
 		}
 		JSONArray json = null;
+		/*
+		 * jsoup 中导入cookie需要使用map格式
+		 */
 		Map<String, String> cookies = new HashMap<>();
 
 		try {
@@ -41,8 +47,11 @@ public class jsonTest {
 
 		}
 		CheckMethods.PrintInfoMessage(cookies.toString());
+		/*
+		 * jsoup 利用cookie访问网页
+		 */
 		Response res = Jsoup
-				.connect("https://www.baidu.com/")
+				.connect("http://weibo.cn/renminwang?page=2")
 				.cookies(cookies)
 				.timeout(8000)
 				.userAgent(

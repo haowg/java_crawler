@@ -15,14 +15,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/*
+ * 利用url
+ */
 public class HtmlParserTool {
 	/*
-	 * 访问url并获得网页内容
+	 * 访问url并获得网页内容，初始化保证每一个url的访问次数都是0次
 	 */
 	public static  Document getDocument(String url){
 		Document doc = getDocument(url,0);
 		return doc;
 	}
+	/*
+	 * 同上，如果访问次数大于等于6则
+	 */
 	private static  Document getDocument(String url,int level) {
 		if(level >= 6) return null;
 		Document doc = null;
@@ -37,23 +43,34 @@ public class HtmlParserTool {
 		} catch (Exception e) {
 			String msg = e.getMessage();
 			if(msg.toLowerCase().contains("time")){
-				System.err.println("[error]: connect to "+ url + " time out.");
-//			}else if(rule){
+CheckMethods.PrintDebugMessage("[error]: connect to "+ url + " time out."+level);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException threadex) {
+					threadex.printStackTrace();
+				}
 				doc = getDocument(url,++level);
 			}else{
-				System.err.println("[error]: " + e.getMessage()+url);
+CheckMethods.PrintDebugMessage("[error]: " + e.getMessage()+url);
 			}
 			e.printStackTrace();
 		}
-		if (doc == null) {
-			System.err.println("连接失败");
+		if (doc == null&&level==0) {
+			CheckMethods.PrintDebugMessage("连接失败");
 		}
 		return doc;
 	}
+	
+	/*
+	 * 通过cookie访问需要验证的网页，返回document
+	 */
 	public static Document getDocument(String url, myCookies cookies) {
 		Document doc = getDocument(url, cookies, 0);
 		return doc;
 	}
+	/*
+	 * 同上验证访问次数少于6
+	 */
 	private static Document getDocument(String url, myCookies cookies,int level) {
 		if(level >=6)
 			return null;
@@ -70,7 +87,7 @@ public class HtmlParserTool {
 					.execute();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			CheckMethods.PrintDebugMessage(e.getMessage());
+CheckMethods.PrintDebugMessage(e.getMessage());
 		}
 		try {
 			if(res == null){
@@ -90,7 +107,7 @@ public class HtmlParserTool {
 				}
 				doc = getDocument(url,cookies,level++);
 			}else{
-				CheckMethods.PrintDebugMessage("[error]: " + e.getMessage());
+CheckMethods.PrintDebugMessage("[error]: " + e.getMessage());
 			}
 //			e.printStackTrace();
 		}
@@ -140,12 +157,16 @@ public class HtmlParserTool {
 	 */
 	public static Set<String> extracLinks(Document doc, HashSet<LinkFilter> linkFilters) {
 		Set<String> set = new HashSet<String>();
-CheckMethods.PrintInfoMessage("git other links");
+//CheckMethods.PrintInfoMessage("git other links");
 		if (doc == null) {
+//CheckMethods.PrintInfoMessage("doc is null when get otherLinks");
 			return set;
 		}
 //		Elements eles = doc.select("a[href~=.*[^(ppt)(jpg)(doc)(jsp)]$]");
 		Elements eles = doc.select("a");
+		/*
+		 * 过滤并整理URL
+		 */
 		for (Element element : eles) {
 			boolean accept = false;
 			String url = element.absUrl("href");
@@ -164,13 +185,6 @@ CheckMethods.PrintInfoMessage("git other links");
 			if (accept) {
 				set.add(url);
 			}
-			if (!accept) {
-//CheckMethods.PrintInfoMessage("not accept ！！！！！！！");
-//for (LinkFilter lf : linkFilters) {
-//	CheckMethods.PrintInfoMessage(lf.filterRegex+"\t"+url);
-//}
-			}
-			
 		}
 		return set;
 	}

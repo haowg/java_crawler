@@ -5,10 +5,10 @@
 
  #MAXLAYER = "6"
  
- FILTERREGEX = ".*renminwang.*page.*"
+ FILTERREGEX = ".*renminwang\?page=.*"
  
- HOMEDIRECTORY = "D:\\bsdb"
- CRAWLERNAME = "weibo_renminwang_3_11_4"
+ HOMEDIRECTORY = "D:\\bdb"
+ CRAWLERNAME = "weibo_renminwang_3_12_37"
  
  SELECTRULE = "{.*renminwang.*}div > div > span.ctt"
  

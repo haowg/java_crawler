@@ -12,7 +12,7 @@ import org.jsoup.select.Elements;
 
 public class parseByRule {
 	/*
-	 * 
+	 * 利用rule查找并目标提取文字并写入文本文档
 	 */
 	public static void parse(String rule,Document doc,String name,String url){
 		try {
@@ -25,7 +25,6 @@ public class parseByRule {
 			}
 //			System.out.println("eles--------------"+eles+"\t"+rule);
 			for (Element element : eles) {
-//CheckMethods.PrintInfoMessage(element.toString());
 				String text = Jsoup.clean(element.toString(), Whitelist.none()).replaceAll("&[^;]*;", "");
 //				String text = element.toString().replaceAll("<[^>]*[bBPp][^>]*>", "\n").replaceAll("<[^>]*>\n*","" ).replaceAll("((\r\n)|\n| |　|\t)+","\n");
 //				String text = element.toString().replaceAll("<[^>]*>\n*","" );

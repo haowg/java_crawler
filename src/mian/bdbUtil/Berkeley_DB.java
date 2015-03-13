@@ -20,7 +20,9 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.je.TransactionConfig;
-
+/*
+ * BerkeleyDB使用案例
+ */
 public class Berkeley_DB {
 	//数据库环境
     private  Environment myDbEnvironment = null;

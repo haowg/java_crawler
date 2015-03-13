@@ -1,9 +1,7 @@
 package mian.Crawler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +12,9 @@ import mian.bdbUtil.BdbPersistentQueue;
 import mian.bdbUtil.Berkeley_DB;
 import mian.tools.CheckMethods;
 import mian.tools.myCookies;
-
+/*
+ * ≤‚ ‘¿‡
+ */
 public class test {
 	public static void main(String[] args) {
 		long time1 = System.currentTimeMillis();

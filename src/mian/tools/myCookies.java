@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -44,7 +45,13 @@ public class myCookies {
 	}
 	public void setCookies(Map<String, String> cookies) {
 		if(cookies != null){
-			this.cookies = cookies;
+System.err.println(this.cookies);
+System.err.println(cookies);
+//			this.cookies = cookies;
+			for (Entry<String, String> entry :cookies.entrySet()) {
+				this.cookies.put(entry.getKey(), entry.getValue());
+			}
+System.err.println(this.cookies);
 		}
 	}
 }
