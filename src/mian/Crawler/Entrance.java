@@ -117,7 +117,7 @@ CheckMethods.PrintDebugMessage("MAXLAYER format is wrong please check it");
 	 */
 	private boolean checkNames(String configxml) {
 		String[] configs = configxml.split("<config");
-		HashSet<String> nameSet = new HashSet<>();
+		HashSet<String> nameSet = new HashSet<String>();
 		for (int i = 1; i< configs.length;i++) {
 			String config = "<config"+configs[i];
 			String name = Jsoup.parse(config).getElementsByTag("config").first().attr("CRAWLERNAME");
@@ -133,7 +133,7 @@ CheckMethods.PrintDebugMessage("MAXLAYER format is wrong please check it");
 	 * 读取配置文件生成seeds 
 	 */
 	private HashSet<CrawlUrl> getseeds(String configxml){
-		HashSet<CrawlUrl> seeds = new HashSet<>();
+		HashSet<CrawlUrl> seeds = new HashSet<CrawlUrl>();
 		for (String line : configxml.split("\n")) {
 			line = line.trim();
 			if (line.startsWith("SEED")) {
@@ -183,7 +183,7 @@ CheckMethods.PrintDebugMessage("MAXLAYER format is wrong please check it");
 	 * 读取配合文件生成rules
 	 */
 	private HashSet<LinkFilter> getFilters(String configxml){
-		HashSet<LinkFilter> filters = new HashSet<>();
+		HashSet<LinkFilter> filters = new HashSet<LinkFilter>();
 		for (String line : configxml.split("\n")) {
 			line = line.trim();
 			if (line.startsWith("FILTERREGEX")) {

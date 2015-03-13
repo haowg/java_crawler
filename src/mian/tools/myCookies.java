@@ -24,7 +24,7 @@ public class myCookies {
 			System.exit(0);
 		}
 		JSONArray json = null;
-		Map<String, String> cookies = new HashMap<>();
+		Map<String, String> cookies = new HashMap<String, String>();
 
 		try {
 			json = new JSONArray(s);

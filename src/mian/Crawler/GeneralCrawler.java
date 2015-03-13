@@ -155,7 +155,7 @@ CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
 	public static void main(String[] args) {
 		HashSet<CrawlUrl> jingdongSeeds = new HashSet<CrawlUrl>();
 		jingdongSeeds.add(new CrawlUrl("http://www.jd.com/allSort.aspx",0));
-		HashSet<LinkFilter> linkFilters = new HashSet<>();
+		HashSet<LinkFilter> linkFilters = new HashSet<LinkFilter>();
 		linkFilters.add(new LinkFilter(".*jd\\.com.*"));
 		
 		GeneralCrawler crawler = new GeneralCrawler(linkFilters,"D:\\bsdb","jingdong",jingdongSeeds, new ArrayList<String>(), Integer.MAX_VALUE);
