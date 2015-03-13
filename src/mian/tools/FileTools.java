@@ -162,4 +162,11 @@ public class FileTools {
 		return dirString;
 		
 	}
+	public static String getJarName(){
+		String path = FileTools.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+//	    System.out.println(path);
+	    String jarName = path.substring(path.lastIndexOf("/")+1,path.lastIndexOf("."));
+//	    System.out.println(jarName);
+		return jarName;
+	}
 }

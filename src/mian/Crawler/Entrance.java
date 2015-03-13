@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import mian.tools.CheckMethods;
+import mian.tools.FileTools;
 import mian.tools.myCookies;
 
 import org.apache.commons.io.FileUtils;
@@ -24,11 +25,23 @@ public class Entrance {
 	
 	public static void main(String[] args) {
 		Entrance ent = new Entrance();
+		if(args.length<1){
+			String jarName = FileTools.getJarName();
+			CheckMethods.PrintDebugMessage("Usage: java -jar "+jarName+" config.xml[in]");
+			System.exit(-1);
+		}
+		String configpath = args[0];
+		File config = new File(configpath);
+		if(!config.exists()){
+			CheckMethods.PrintDebugMessage(args[0]+" not exist ! please check it");
+			System.exit(-1);
+		}
+		ent.parse(configpath);
 //		ent.parseConfig("config.xml");
 //		ent.parseConfig("config2.xml");
 //		ent.parse("News_config.xml");
 //		ent.parse("testCookies.xml");
-		ent.parse("testMerge.xml");
+//		ent.parse("testMerge.xml");
 //		ent.parse("qqNews_config2.xml");
 	}
 	/*
