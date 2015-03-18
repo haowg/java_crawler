@@ -12,7 +12,7 @@ public class CheckMethods {
 
 	public static void PrintInfoMessage(String message) {
 		// TODO Auto-generated method stub
-//		System.out.println(message);
+		System.out.println(message);
 	}
 
 }

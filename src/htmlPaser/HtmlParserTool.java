@@ -42,7 +42,7 @@ public class HtmlParserTool {
 					.get();
 		} catch (Exception e) {
 			String msg = e.getMessage();
-			if(msg.toLowerCase().contains("time")){
+			if(msg.toLowerCase().contains("ime")){
 CheckMethods.PrintDebugMessage("[error]: connect to "+ url + " time out."+level);
 				try {
 					Thread.sleep(1000);
@@ -50,10 +50,12 @@ CheckMethods.PrintDebugMessage("[error]: connect to "+ url + " time out."+level)
 					threadex.printStackTrace();
 				}
 				doc = getDocument(url,++level);
+if(level>=5){
+	CheckMethods.PrintDebugMessage("[error]:\t"+e.getMessage()+"\t"+url);
+	}
 			}else{
-CheckMethods.PrintDebugMessage("[error]: " + e.getMessage()+url);
+CheckMethods.PrintDebugMessage("[error]:\t" + e.getMessage()+"\t"+url);
 			}
-			e.printStackTrace();
 		}
 		if (doc == null&&level==0) {
 			CheckMethods.PrintDebugMessage("Á¬½ÓÊ§°Ü");
@@ -75,7 +77,7 @@ CheckMethods.PrintDebugMessage("[error]: " + e.getMessage()+url);
 		if(level >=6)
 			return null;
 		Response res = null;
-		Document doc = new Document("");
+		Document doc = null;
 		try {
 			res=Jsoup
 					.connect(url)

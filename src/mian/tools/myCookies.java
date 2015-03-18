@@ -45,13 +45,13 @@ public class myCookies {
 	}
 	public void setCookies(Map<String, String> cookies) {
 		if(cookies != null){
-System.err.println(this.cookies);
-System.err.println(cookies);
+//System.err.println(this.cookies);
+//System.err.println(cookies);
 //			this.cookies = cookies;
 			for (Entry<String, String> entry :cookies.entrySet()) {
 				this.cookies.put(entry.getKey(), entry.getValue());
 			}
-System.err.println(this.cookies);
+//System.err.println(this.cookies);
 		}
 	}
 }

@@ -6,7 +6,7 @@ import mian.Crawler.CrawlUrl;
 import mian.tools.CheckMethods;
 
 /*
- * 布隆过滤器，能够更快速的查询是否访问过其中的元素，有一定的错误率，网络爬虫可以容忍，速度和内存低于hash模式
+ * 布隆过滤器，能够更快速的查询是否访问过其中的元素，有一定的错误率，网络爬虫可以容忍，速度快于内存低于hash模式
  */
 
 public class SimpleBloomFilter {
@@ -40,6 +40,8 @@ CheckMethods.PrintDebugMessage(++filterNum+"\t fileterNum"+"\t"+value);
 			for (SimpleHash f : func) {
 				bits.set(f.hash(value), true);
 			}
+		}else{
+CheckMethods.PrintDebugMessage(++filterNum+"\t fileterNum"+"\t"+value+"!!!!!!!!!!!!");
 		}
 	}
 
@@ -96,5 +98,11 @@ CheckMethods.PrintDebugMessage(++filterNum+"\t fileterNum"+"\t"+value);
 			filter.add(value);
 			System.out.println(filter.contains(value));
 			filter.add("sssss");	
+			filter.add("http://www.dongfeng-nissan.com.cn/Nissan");
+			System.out.println(filter.contains("http://www.dongfeng-nissan.com.cn/Nissan"));
+			filter.add("http://www.dongfeng-nissan.com.cn/Nissan");
+			System.out.println(filter.contains("http://www.dongfeng-nissan.com.cn/Nissan"));
+			filter.add("http://www.dongfeng-nissan.com.cn/Nissan");
+			System.out.println(filter.contains("http://www.dongfeng-nissan.com.cn/Nissan"));
 		}
 }

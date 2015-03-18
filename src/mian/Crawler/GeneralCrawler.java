@@ -71,10 +71,11 @@ public class GeneralCrawler implements Runnable{
 		
 		SimpleBloomFilter sbf = new SimpleBloomFilter();
 		SimpleBloomFilter sbf_dturl = new SimpleBloomFilter();
-		BDBFrontier unVisitedSet = new BDBFrontier(homeDirectory, crawlerName
-				+ "unVisitedSet", true, sbf,sbf_dturl);
 		BDBFrontier visitedSet = new BDBFrontier(homeDirectory, crawlerName
 				+ "visitedSet", false, sbf,sbf_dturl);
+		BDBFrontier unVisitedSet = new BDBFrontier(homeDirectory, crawlerName
+				+ "unVisitedSet", true, sbf,sbf_dturl);
+		
 		initDBFrtrawlerWithSeeds(seeds2, unVisitedSet);
 
 		CheckMethods.PrintDebugMessage("unvisitedSet size:\t"
@@ -88,36 +89,54 @@ public class GeneralCrawler implements Runnable{
 		) {
 			// 队头 URL 出队列
 			CrawlUrl visitUrl = null;
+System.out.println(unVisitedSet.size());
 			try {
 				visitUrl = unVisitedSet.pool();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+System.out.println(unVisitedSet.size());
 			if (visitUrl == null||visitUrl.getLayer()>maxLayer)
 				continue;
+System.out.println(visitUrl.getOriUrl());
+			if(sbf.contains(visitUrl.getOriUrl())||sbf_dturl.contains(visitUrl.getOriUrl())){
+CheckMethods.PrintInfoMessage("get a visited url !!! "+visitUrl.getOriUrl());
+				continue;
+			}
+System.out.println(visitUrl.getOriUrl());
 			Document doc = null;
 			if(cookies==null){
 				doc = HtmlParserTool.getDocument(visitUrl.getOriUrl());
-CheckMethods.PrintInfoMessage("no cookies");
-CheckMethods.PrintInfoMessage("------"+visitUrl.getOriUrl()+"-----"+visitUrl.getLayer()+"-----");
+//CheckMethods.PrintInfoMessage("no cookies");
+//CheckMethods.PrintInfoMessage("------"+visitUrl.getOriUrl()+"-----"+visitUrl.getLayer()+"-----");
 			}else{
 				doc = HtmlParserTool.getDocument(visitUrl.getOriUrl(), cookies);
-CheckMethods.PrintInfoMessage("have cookies");
+//CheckMethods.PrintInfoMessage("have cookies");
 			}
 			getLMData(doc,visitUrl.getOriUrl(),rules2);
-CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl()+"\tlayer: "+visitUrl.getLayer());
-			// 该 URL 放入已访问的 URL 中
-			visitedSet.putUrl(visitUrl);
-CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
+//CheckMethods.PrintInfoMessage("URL:\t" + visitUrl.getOriUrl()+"\tlayer: "+visitUrl.getLayer());
+			
+			
+//CheckMethods.PrintInfoMessage("visitedSize = " + visitedSet.size());
 			// 提取出下载网页中的 URL
 			Set<String> links = HtmlParserTool.extracLinks(doc, LinkFilters);
 			// 新的未访问的 URL 入队
 			for (String link : links) {
-				CrawlUrl curl = new CrawlUrl();
-				curl.setOriUrl(link);
-				curl.setLayer(visitUrl.getLayer()+1);
-				unVisitedSet.putUrl(curl);
+				if(!(sbf.contains(link.trim())||sbf_dturl.contains(link.trim())||link.equals(visitUrl.getOriUrl()))){
+					CrawlUrl curl = new CrawlUrl();
+					curl.setOriUrl(link);
+					curl.setLayer(visitUrl.getLayer()+1);
+					unVisitedSet.putUrl(curl);
+				}else{
+CheckMethods.PrintInfoMessage("find a visited url "+link);
+				}
 			}
+			//把新url同步到硬盘上
+			unVisitedSet.sync();
+			// 该 URL 放入已访问的 URL 中
+			if(doc != null)
+				visitedSet.putUrl(visitUrl);
+System.out.println((sbf.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)))||sbf_dturl.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)));
 		}
 		visitedSet.close();
 		unVisitedSet.close();

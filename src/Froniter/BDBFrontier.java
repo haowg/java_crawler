@@ -39,6 +39,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 	private boolean isunvisited = false;
 	private String dbName = "db";
 	private String homeDirectory = null;
+	BDBFrontier unVisitedSet = null;
 	
 	// 使用默认的缓存大小构造函数
 	@SuppressWarnings({ "rawtypes", "unchecked" })

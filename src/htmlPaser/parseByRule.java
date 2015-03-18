@@ -18,6 +18,9 @@ public class parseByRule {
 		try {
 			name = name+".txt";
 			Elements eles = null;
+			if(doc == null){
+				return;
+			}
 			eles = doc.select(rule);
 			if(!eles.toString().trim().equals("")){
 //				System.out.println("eles----"+eles+"-------");
