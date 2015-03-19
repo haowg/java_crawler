@@ -89,21 +89,21 @@ public class GeneralCrawler implements Runnable{
 		) {
 			// 队头 URL 出队列
 			CrawlUrl visitUrl = null;
-System.out.println(unVisitedSet.size());
+//System.out.println(unVisitedSet.size());
 			try {
 				visitUrl = unVisitedSet.pool();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-System.out.println(unVisitedSet.size());
+//System.out.println(unVisitedSet.size());
 			if (visitUrl == null||visitUrl.getLayer()>maxLayer)
 				continue;
-System.out.println(visitUrl.getOriUrl());
+//System.out.println(visitUrl.getOriUrl());
 			if(sbf.contains(visitUrl.getOriUrl())||sbf_dturl.contains(visitUrl.getOriUrl())){
-CheckMethods.PrintInfoMessage("get a visited url !!! "+visitUrl.getOriUrl());
+//CheckMethods.PrintInfoMessage("get a visited url !!! "+visitUrl.getOriUrl());
 				continue;
 			}
-System.out.println(visitUrl.getOriUrl());
+//System.out.println(visitUrl.getOriUrl());
 			Document doc = null;
 			if(cookies==null){
 				doc = HtmlParserTool.getDocument(visitUrl.getOriUrl());
@@ -122,13 +122,13 @@ System.out.println(visitUrl.getOriUrl());
 			Set<String> links = HtmlParserTool.extracLinks(doc, LinkFilters);
 			// 新的未访问的 URL 入队
 			for (String link : links) {
-				if(!(sbf.contains(link.trim())||sbf_dturl.contains(link.trim())||link.equals(visitUrl.getOriUrl()))){
+				if(!(sbf.contains(link.trim())||sbf_dturl.contains(link.trim())||link.equals(visitUrl.getOriUrl().trim()))){
 					CrawlUrl curl = new CrawlUrl();
 					curl.setOriUrl(link);
 					curl.setLayer(visitUrl.getLayer()+1);
 					unVisitedSet.putUrl(curl);
-				}else{
-CheckMethods.PrintInfoMessage("find a visited url "+link);
+//				}else{
+//CheckMethods.PrintInfoMessage("find a visited url "+link);
 				}
 			}
 			//把新url同步到硬盘上
@@ -136,7 +136,7 @@ CheckMethods.PrintInfoMessage("find a visited url "+link);
 			// 该 URL 放入已访问的 URL 中
 			if(doc != null)
 				visitedSet.putUrl(visitUrl);
-System.out.println((sbf.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)))||sbf_dturl.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)));
+//System.out.println((sbf.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)))||sbf_dturl.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)));
 		}
 		visitedSet.close();
 		unVisitedSet.close();
