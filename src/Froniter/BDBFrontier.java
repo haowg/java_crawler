@@ -36,6 +36,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 	private StoredMap pendingUrisDB = null;
 	SimpleBloomFilter sbf_link = null;
 	SimpleBloomFilter sbf_dturl = null;
+	SimpleBloomFilter sbf_unvisited = null;
 	private boolean isunvisited = false;
 	private String dbName = "db";
 	private String homeDirectory = null;
@@ -69,6 +70,19 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 		}
 	}
 
+	public BDBFrontier(String homeDirectory2, String string, boolean b,
+			SimpleBloomFilter sbf, SimpleBloomFilter sbf_dturl2,
+			SimpleBloomFilter sbf_unvisited) {
+		this(homeDirectory2, string, b, sbf, sbf_dturl2);
+		this.sbf_unvisited = sbf_unvisited;
+		
+		if (!prestrainAndCreatFilter()) {
+			CheckMethods.PrintDebugMessage("read unVisitedSet fault!");
+			System.exit(-1);
+		}
+		
+	}
+
 	// 返回并删除下一条记录
 	@SuppressWarnings({ "unchecked" })
 	public CrawlUrl pool() throws Exception {
@@ -87,7 +101,7 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 	 * 判断是不是动态网页
 	 */
 	public boolean isDynamicUrl(String url){
-		String regex = "(.*(/|com|cn|gov|edu|jsp|php|asp)|.*index.*)";
+		String regex = "(.*(/|com|cn|gov|edu)|.*index.*|.*list.*)";
 //		String regex_index = ".*(index|list).*";
 //		Pattern p_index = Pattern.compile(regex_index);
 		Pattern p = Pattern.compile(regex);
@@ -255,6 +269,26 @@ public class BDBFrontier extends AbstractFrontier implements Frontier {
 			e.printStackTrace();
 			return false;
 		}
+		return true;
+	}
+	/*
+	 * 用于对unvisitedSet预加载并建立过滤器
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean prestrainAndCreatFilter() {
+		CrawlUrl result = null;
+		Iterator<?> iter = pendingUrisDB.entrySet().iterator();
+//		try{
+		while (iter.hasNext()) {
+			// Set entrys = pendingUrisDB.entrySet();
+			Entry<String, CrawlUrl> entry = (Entry<String, CrawlUrl>) iter.next();
+			result = entry.getValue();
+			sbf_unvisited.add(result);
+		}
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			return false;
+//		}
 		return true;
 	}
 	/*

@@ -26,8 +26,8 @@ public class Entrance {
 	public static void main(String[] args) {
 		Entrance ent = new Entrance();
 		if(args.length<1){
-//			String jarName = FileTools.getJarName();
-//			CheckMethods.PrintDebugMessage("Usage: java -jar "+jarName+" config.xml[in]");
+			String jarName = FileTools.getJarName();
+			CheckMethods.PrintDebugMessage("Usage: java -jar "+jarName+" config.xml[in]");
 			System.exit(-1);
 		}
 		String configpath = args[0];

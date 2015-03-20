@@ -71,10 +71,11 @@ public class GeneralCrawler implements Runnable{
 		
 		SimpleBloomFilter sbf = new SimpleBloomFilter();
 		SimpleBloomFilter sbf_dturl = new SimpleBloomFilter();
+		SimpleBloomFilter sbf_unvisited = new SimpleBloomFilter();
 		BDBFrontier visitedSet = new BDBFrontier(homeDirectory, crawlerName
 				+ "visitedSet", false, sbf,sbf_dturl);
 		BDBFrontier unVisitedSet = new BDBFrontier(homeDirectory, crawlerName
-				+ "unVisitedSet", true, sbf,sbf_dturl);
+				+ "unVisitedSet", true, sbf,sbf_dturl,sbf_unvisited);
 		
 		initDBFrtrawlerWithSeeds(seeds2, unVisitedSet);
 
@@ -100,7 +101,7 @@ public class GeneralCrawler implements Runnable{
 				continue;
 //System.out.println(visitUrl.getOriUrl());
 			if(sbf.contains(visitUrl.getOriUrl())||sbf_dturl.contains(visitUrl.getOriUrl())){
-//CheckMethods.PrintInfoMessage("get a visited url !!! "+visitUrl.getOriUrl());
+CheckMethods.PrintInfoMessage("get a visited url !!! "+visitUrl.getOriUrl());
 				continue;
 			}
 //System.out.println(visitUrl.getOriUrl());
@@ -122,11 +123,14 @@ public class GeneralCrawler implements Runnable{
 			Set<String> links = HtmlParserTool.extracLinks(doc, LinkFilters);
 			// 新的未访问的 URL 入队
 			for (String link : links) {
-				if(!(sbf.contains(link.trim())||sbf_dturl.contains(link.trim())||link.equals(visitUrl.getOriUrl().trim()))){
+				link = link.split("#")[0];
+				if(!(sbf.contains(link.trim())||sbf_dturl.contains(link.trim())||sbf_unvisited.contains(link.trim()))){
+//				if(!(sbf.contains(link.trim())||sbf_dturl.contains(link.trim()))){
 					CrawlUrl curl = new CrawlUrl();
 					curl.setOriUrl(link);
 					curl.setLayer(visitUrl.getLayer()+1);
 					unVisitedSet.putUrl(curl);
+					sbf_unvisited.add(curl);
 //				}else{
 //CheckMethods.PrintInfoMessage("find a visited url "+link);
 				}
@@ -134,8 +138,10 @@ public class GeneralCrawler implements Runnable{
 			//把新url同步到硬盘上
 			unVisitedSet.sync();
 			// 该 URL 放入已访问的 URL 中
-			if(doc != null)
+			if(doc != null){
 				visitedSet.putUrl(visitUrl);
+CheckMethods.PrintDebugMessage(visitUrl.getOriUrl());
+			}
 //System.out.println((sbf.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)))||sbf_dturl.contains(new CrawlUrl("http://www.dongfeng-nissan.com.cn/op", 0)));
 		}
 		visitedSet.close();

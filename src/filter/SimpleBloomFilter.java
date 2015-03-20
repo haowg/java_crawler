@@ -9,12 +9,13 @@ import mian.tools.CheckMethods;
  * 布隆过滤器，能够更快速的查询是否访问过其中的元素，有一定的错误率，网络爬虫可以容忍，速度快于内存低于hash模式
  */
 
+@SuppressWarnings("unused")
 public class SimpleBloomFilter {
 	private static final int DEFAULT_SIZE = 2 << 24;
 	private static final int[] seeds = new int[] { 7, 11, 13, 31, 37, 61, };
 	private BitSet bits = new BitSet(DEFAULT_SIZE);
 	private SimpleHash[] func = new SimpleHash[seeds.length];
-	private int filterNum = 0;
+//	private int filterNum = 0;
 
 
 
@@ -36,12 +37,12 @@ public class SimpleBloomFilter {
 	// 覆盖方法，把 URL 添加进来
 	public void add(String value) {
 		if (!contains(value)) {
-CheckMethods.PrintDebugMessage(++filterNum+"\t fileterNum"+"\t"+value);
+//CheckMethods.PrintDebugMessage(++filterNum+"\t fileterNum"+"\t"+value);
 			for (SimpleHash f : func) {
 				bits.set(f.hash(value), true);
 			}
-		}else{
-CheckMethods.PrintDebugMessage(++filterNum+"\t fileterNum"+"\t"+value+"!!!!!!!!!!!!");
+//		}else{
+//CheckMethods.PrintDebugMessage(filterNum+"\t fileterNum"+"\t"+value+"!!!!!!!!!!!!");
 		}
 	}
 

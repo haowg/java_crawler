@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Pachira_LMCrawler" default="dist" basedir=".">
+	<property name="app.name" value="LMCrawler" />
+	<property name="lib.home" value="${basedir}/libs" />
+	<property name="build.home" value="${basedir}/build" />
+	<property name="classes.home" value="${build.home}/classes" />
+	<property name="src.home" value="${basedir}/src" />
+
+	<path id="compile-classpath">
+		<fileset dir="${lib.home}" includes="**/*.jar"/>
+	</path>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: init                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="init">
+		<mkdir dir="${build.home}" />
+		<mkdir dir="${classes.home}" />
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: clean                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="clean" description="Delete old build and dist directories">
+		<delete dir="${build.home}" />
+	</target>
+
+	<!-- ================================= 
+          target: compile              
+         ================================= -->
+	<target name="compile" depends="init" description="Compile java sources">
+		<javac srcdir="${src.home}" destdir="${classes.home}" includeantruntime="on" encoding="gbk">
+			<classpath refid="compile-classpath" />
+		</javac>
+		<!-- Copy application resources -->
+		<copy todir="${classes.home}">
+			<fileset dir="${src.home}" excludes="**/*.java" />
+		</copy>
+	</target>
+	
+	<!-- ================================= 
+          target: jar              
+         ================================= -->
+	<target name="dist" depends="compile">
+		<jar destfile="${build.home}/${app.name}.jar" basedir="${classes.home}">
+			<manifest>
+				<attribute name="Main-Class" value="mian.Crawler.Entrance"/>
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<zipfileset excludes="META-INF/*.SF" src="${lib.home}/jsoup-1.7.3.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="${lib.home}/je-6.2.31.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="${lib.home}/JEJConsole.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="${lib.home}/commons-io-2.4.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="${lib.home}/RepJEJConsole.jar" />
+		</jar>
+	</target>
+</project>
