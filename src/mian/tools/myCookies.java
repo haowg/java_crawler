@@ -1,12 +1,9 @@
 package mian.tools;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,20 +11,14 @@ public class myCookies {
 	
 	private Map<String,String> cookies = null;
 	
-	public myCookies(String location){
+	public myCookies(String CookiesJsonString){
 
-		String s = "";
-		try {
-			s = FileUtils.readFileToString(new File(location));
-		} catch (IOException e) {
-			CheckMethods.PrintDebugMessage("Can not find cookies file !!!");
-			System.exit(0);
-		}
+		
 		JSONArray json = null;
 		Map<String, String> cookies = new HashMap<String, String>();
 
 		try {
-			json = new JSONArray(s);
+			json = new JSONArray(CookiesJsonString);
 
 			for (int i = 0; i < json.length(); i++) {
 				JSONObject js = (JSONObject) json.get(i);

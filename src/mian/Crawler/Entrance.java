@@ -75,7 +75,8 @@ CheckMethods.PrintDebugMessage("Name is same ! please check it");
 		String homeDirectory = "";
 		String crawlerName = "";
 		String cookieLocation = "";
-		myCookies cookies = null;
+//		List<myCookies> cookies = new ArrayList<myCookies>();
+		List<myCookies> cookies = null;
 		int maxlayer = Integer.MAX_VALUE;
 		Entrance ent = new Entrance();
 		Document doc = Jsoup.parse(configxml);
@@ -84,10 +85,10 @@ CheckMethods.PrintDebugMessage("Name is same ! please check it");
 		linkFilters = getFilters(configxml);
 		homeDirectory = e.attr("homeDirectory");
 		crawlerName = e.attr("crawlerName");
-		
+		//单cookies版
 		if(!(e.attr("cookiesloc").equals("null")||e.attr("cookiesloc").equals(""))){
 			cookieLocation = e.attr("cookiesloc");
-			cookies = new myCookies(cookieLocation);
+			cookies = getCookiesListByCookieLocation(cookieLocation);
 		}
 		if(!(e.attr("maxlayer").equals("null")||e.attr("maxlayer").equals(""))){
 			try{
@@ -112,6 +113,7 @@ CheckMethods.PrintDebugMessage("MAXLAYER format is wrong please check it");
 		new Thread(crawler).start();
 	}
 	
+
 	/*
 	 * 检查各个线程名是否一样
 	 */
@@ -153,7 +155,25 @@ CheckMethods.PrintDebugMessage("MAXLAYER format is wrong please check it");
 		return seeds;
 	}
 	/*
-	 * 读取配合文件生成rules
+	 * 读取配置文件生成cookiesList
+	 */
+	private List<myCookies> getCookiesListByCookieLocation(String cookieLocation) {
+		List<myCookies> myCookiesList = new ArrayList<myCookies>();
+		String AllCookiesString = "]";
+		try {
+			AllCookiesString = FileUtils.readFileToString(new File(cookieLocation));
+		} catch (IOException e) {
+			CheckMethods.PrintDebugMessage("Can not find cookies file !!!");
+			System.exit(0);
+		}
+		String[] CookiesJsonStrings = AllCookiesString.split("]"); 
+		for (String CookiesJsonString : CookiesJsonStrings) {
+			myCookiesList.add(new myCookies(CookiesJsonString));
+		}
+		return myCookiesList;
+	}
+	/*
+	 * 读取配置文件生成rules
 	 */
 	private List<String> getrules(String configxml){
 		List<String> rules = new ArrayList<String>();
@@ -180,7 +200,7 @@ CheckMethods.PrintDebugMessage("MAXLAYER format is wrong please check it");
 	
 	
 	/*
-	 * 读取配合文件生成rules
+	 * 读取配置文件生成URLfilters
 	 */
 	private HashSet<LinkFilter> getFilters(String configxml){
 		HashSet<LinkFilter> filters = new HashSet<LinkFilter>();

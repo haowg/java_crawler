@@ -7,6 +7,7 @@ import htmlPaser.parseByRule;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import mian.tools.CheckMethods;
@@ -25,7 +26,7 @@ public class GeneralCrawler implements Runnable{
 	HashSet<CrawlUrl> seeds = null;
 	List<String> rules = null;
 	private int maxLayer = 0;
-	myCookies cookies = null;
+	List<myCookies> cookies = null;
 
 	public GeneralCrawler(final HashSet<LinkFilter> linkFilters, String homeDirectory,
 			String crawlerName,HashSet<CrawlUrl> jingdongSeeds, List<String> rules2,int layer) {
@@ -48,9 +49,9 @@ public class GeneralCrawler implements Runnable{
 	public GeneralCrawler(HashSet<LinkFilter> linkFilters2,
 			String homeDirectory2, String crawlerName2,
 			HashSet<CrawlUrl> seeds2, List<String> rules2, int maxlayer,
-			myCookies cookies) {
+			List<myCookies> cookies2) {
 		this(linkFilters2, homeDirectory2, crawlerName2, seeds2, rules2, maxlayer);
-		this.cookies = cookies;
+		this.cookies = cookies2;
 	}
 	public void run() {
 		crawlingbyDBFrt(seeds,rules);
@@ -111,7 +112,7 @@ CheckMethods.PrintInfoMessage("get a visited url !!! "+visitUrl.getOriUrl());
 //CheckMethods.PrintInfoMessage("no cookies");
 //CheckMethods.PrintInfoMessage("------"+visitUrl.getOriUrl()+"-----"+visitUrl.getLayer()+"-----");
 			}else{
-				doc = HtmlParserTool.getDocument(visitUrl.getOriUrl(), cookies);
+				doc = HtmlParserTool.getDocument(visitUrl.getOriUrl(), cookies.get(new Random().nextInt(cookies.size())));
 //CheckMethods.PrintInfoMessage("have cookies");
 			}
 			getLMData(doc,visitUrl.getOriUrl(),rules2);

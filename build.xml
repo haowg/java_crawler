@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Pachira_LMCrawler" default="dist" basedir=".">
+<project name="Pachira_LMCrawler_1" default="dist" basedir=".">
 	<property name="app.name" value="LMCrawler" />
 	<property name="lib.home" value="${basedir}/libs" />
 	<property name="build.home" value="${basedir}/build" />
